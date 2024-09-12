@@ -9,7 +9,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Tngina ni Onecent.</Text>
+      <Text>MAANGAS</Text>
     </View>
   );
 }
