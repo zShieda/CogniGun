@@ -1,12 +1,81 @@
-import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import React, { Component } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Hello, hi!</Text>
-    </View>
-  );
+
+interface listProps {
+}
+
+interface listState {
+  passcode: string;
+  input: string;
+}
+
+class list extends Component<listProps, listState> {
+  constructor(props: listProps) {
+    super(props);
+    this.state = {
+      passcode: '072930', 
+      input: '', 
+    };
+  }
+
+  handlePress = (digit: string) => {
+    this.setState(prevState => ({
+      input: prevState.input + digit
+    }), () => {
+      if (this.state.input.length === 6) {
+        this.validatePasscode();
+      }
+    });
+  }
+
+  handleDelete = () => {
+    this.setState(prevState => ({
+      input: prevState.input.slice(0, -1)
+    }));
+  }
+
+  validatePasscode = () => {
+    if (this.state.input === this.state.passcode) {
+      Alert.alert('Success', 'Passcode Correct!');
+    } else {
+      Alert.alert('Error', 'Incorrect Passcode');
+      this.setState({ input: '' });
+    }
+  }
+
+  render() {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.header}>Enter Passcode or Scan QR</Text>
+        <View style={styles.passcodeContainer}>
+          {Array(6).fill('').map((_, i) => (
+            <View key={i} style={[
+              styles.passcodeDot,
+              { opacity: this.state.input.length > i ? 1 : 0.3 }
+            ]} />
+          ))}
+        </View>
+
+        <View style={styles.keypad}>
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'DEL'].map(digit => (
+            <TouchableOpacity
+              key={digit}
+              style={styles.button}
+              onPress={() => digit === 'DEL' ? this.handleDelete() : this.handlePress(digit)}
+              disabled={digit === ''}
+            >
+              <Text style={styles.buttonText}>{digit}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Cancel</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -14,10 +83,56 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
-  text: {
+  header: {
+    fontSize: 20,
+    color: '#666',
+    marginBottom: 20,
+  },
+  passcodeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '50%',
+    marginBottom: 30,
+  },
+  passcodeDot: {
+    width: 15,
+    height: 15,
+    borderRadius: 15 / 2,
+    backgroundColor: '#333',
+  },
+  keypad: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    width: '80%',
+  },
+  button: {
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+    backgroundColor: '#ddd',
+    borderRadius: 40, // Round buttons
+  },
+  buttonText: {
     fontSize: 24,
-    fontWeight: 'bold',
+    color: '#000',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+    marginTop: 30,
+  },
+  footerText: {
+    justifyContent: 'center',
+    marginStart:135,
+    fontSize: 18,
+    color: '#007AFF',
   },
 });
+
+export default list;
