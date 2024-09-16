@@ -1,32 +1,24 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, Alert, Modal } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner'; 
+import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, Alert, Dimensions } from 'react-native';
+import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons'; // Imported Ionicons
+
+const { width, height } = Dimensions.get('window');
 
 interface listProps {}
 
 interface listState {
   passcode: string;
   input: string;
-  hasPermission: boolean | null;
-  scanned: boolean;
-  isScannerVisible: boolean;
 }
 
-class list extends Component<listProps, listState> {
+class List extends Component<listProps, listState> {
   constructor(props: listProps) {
     super(props);
     this.state = {
       passcode: '072930',
       input: '',
-      hasPermission: null,
-      scanned: false,
-      isScannerVisible: false,
     };
-  }
-
-  async componentDidMount() {
-    const { status } = await BarCodeScanner.requestPermissionsAsync();
-    this.setState({ hasPermission: status === 'granted' });
   }
 
   handlePress = (digit: string) => {
@@ -54,28 +46,14 @@ class list extends Component<listProps, listState> {
     }
   }
 
-  // QR result kineme
-  handleBarCodeScanned = ({ type, data }: any) => {
-    this.setState({ scanned: true, isScannerVisible: false });
-    Alert.alert('Handgun Scanned', `Data: ${data}`);
-  };
-
-  // Bukas QR
-  openQRScanner = () => {
-    this.setState({ isScannerVisible: true, scanned: false });
-  };
+  handleNavigation = () => {
+    router.push('/scan');
+  }
 
   render() {
-    if (this.state.hasPermission === null) {
-      return <Text>Requesting for camera permission</Text>;
-    }
-    if (this.state.hasPermission === false) {
-      return <Text>No access to camera</Text>;
-    }
-
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={styles.header}>Enter Passcode or Scan QR</Text>
+        <Text style={styles.header}>Enter Passcode or Scan</Text>
         <View style={styles.passcodeContainer}>
           {Array(6).fill('').map((_, i) => (
             <View key={i} style={[
@@ -86,38 +64,22 @@ class list extends Component<listProps, listState> {
         </View>
 
         <View style={styles.keypad}>
-          {['1', '2', '3', '4', '5', '6', '7', '8', '9', 'QR', '0', 'DEL'].map(digit => (
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'DEL'].map(digit => (
             <TouchableOpacity
               key={digit}
               style={styles.button}
-              onPress={() => digit === 'DEL' ? this.handleDelete() : 
-                digit === 'QR' ? this.openQRScanner() : this.handlePress(digit)}
+              onPress={() => digit === '' ? this.handleNavigation() : digit === 'DEL' ? this.handleDelete() : this.handlePress(digit)}
             >
-              <Text style={styles.buttonText}>{digit}</Text>
+              {digit === '' ? (
+                <Ionicons name="qr-code-outline" size={32} color="brown" />
+              ) : digit === 'DEL' ? (
+                <Ionicons name="backspace-outline" size={32} color="brown" />
+              ) : (
+                <Text style={styles.buttonText}>{digit}</Text>
+              )}
             </TouchableOpacity>
           ))}
         </View>
-
-        <Modal
-          visible={this.state.isScannerVisible}
-          animationType="slide"
-          onRequestClose={() => this.setState({ isScannerVisible: false })}
-        >
-          <SafeAreaView style={styles.scannerContainer}>
-            <BarCodeScanner
-              onBarCodeScanned={this.state.scanned ? undefined : this.handleBarCodeScanned}
-              style={StyleSheet.absoluteFillObject}
-            />
-            {this.state.scanned && (
-              <TouchableOpacity
-                style={styles.scanAgainButton}
-                onPress={() => this.setState({ scanned: false })}
-              >
-                <Text style={styles.scanAgainText}>Tap to Scan Again</Text>
-              </TouchableOpacity>
-            )}
-          </SafeAreaView>
-        </Modal>
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Cancel</Text>
@@ -164,7 +126,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     margin: 10,
     backgroundColor: '#ddd',
-    borderRadius: 40, // pangbilog
+    borderRadius: 40, // Round buttons
   },
   buttonText: {
     fontSize: 24,
@@ -177,31 +139,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   footerText: {
-    marginStart:135,
+    justifyContent: 'center',
+    marginStart: 135,
     fontSize: 18,
     color: '#007AFF',
   },
-  scannerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000',
-  },
-  scanAgainButton: {
-    position: 'absolute',
-    bottom: 40,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scanAgainText: {
-    color: '#fff',
-    fontSize: 20,
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 5,
-  },
 });
 
-export default list;
+export default List;
