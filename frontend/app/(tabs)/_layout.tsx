@@ -7,8 +7,8 @@ export default () => {
         name="scan"
         options={{ headerShown: false, tabBarStyle: { display: 'none' } }}
       />
+            <Tabs.Screen name="pin"/>
             <Tabs.Screen name="home"/>
-            <Tabs.Screen name="list"/>
         </Tabs>
     )
 }
