@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, Alert, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, Alert, Dimensions, Image } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -54,13 +54,16 @@ class Pin extends Component<PinProps, PinState> {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.topSection}>
-          <Text style={styles.headerText}>COGNIGUN</Text>
+          {/* Replace the require path with your image path */}
+          <Image
+  style={styles.tinyLogo}
+  source={require('./assets/LOGO.png')}/>
           <Text style={styles.instructionText}>Enter your MPIN</Text>
           <View style={styles.passcodeContainer}>
             {Array(6).fill('').map((_, i) => (
               <View key={i} style={[
                 styles.passcodeDot,
-                { backgroundColor: this.state.input.length > i ? '#FFFFFF' : '#80C2F3' }
+                { backgroundColor: this.state.input.length > i ? '#ac3939' : '#e5b3b3' }
               ]} />
             ))}
           </View>
@@ -80,7 +83,7 @@ class Pin extends Component<PinProps, PinState> {
                 }}
               >
                 {item === 'delete' ? (
-                  <Ionicons name="backspace-outline" size={24} color="#007BFF" />
+                  <Ionicons name="backspace-outline" size={24} color="#999999" />
                 ) : (
                   item && <Text style={styles.buttonText}>{item}</Text>
                 )}
@@ -90,7 +93,7 @@ class Pin extends Component<PinProps, PinState> {
         </View>
         <View style={styles.footer}>
           <TouchableOpacity style={styles.footerButton} onPress={this.handleNavigation}>
-            <Ionicons name="qr-code-outline" size={24} color="#007BFF" />
+            <Ionicons name="qr-code-outline" size={24} color="#732626" />
             <Text style={styles.footerText}>Scan QR Code</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.footerButton} onPress={() => Alert.alert('Forgot MPIN', 'Please contact support to reset your MPIN.')}>
@@ -108,34 +111,32 @@ const styles = StyleSheet.create({
   },
   topSection: {
     flex: 1,
-    backgroundColor: '#007BFF', 
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 50,
   },
-  headerText: {
-    fontSize: 20,
-    color: '#FFFFFF', 
-    fontWeight: 'bold',
-    marginBottom: 10,
+  tinyLogo: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
+    marginTop:20,
   },
   instructionText: {
     fontSize: 18,
-    color: '#FFFFFF', 
-    marginBottom: 20,
+    color: '#999999', 
     fontWeight: '500',
+    marginTop: 10,
   },
   passcodeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '60%',
     maxWidth: 250,
-    marginBottom: '10%',
   },
   passcodeDot: {
     width: 15,
     height: 15,
     borderRadius: 7.5,
+    marginTop: 20,
   },
   bottomSection: {
     flex: 2,
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     width: '80%',
-    maxWidth: 300,
+    maxWidth: 400,
   },
   button: {
     width: '30%',
@@ -156,11 +157,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     margin: '1.5%',
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: 'white', 
+    borderRadius: 50,
   },
   buttonText: {
     fontSize: 24,
-    color: '#007BFF', 
+    color: '#712828', 
     fontWeight: 'bold',
   },
   footer: {
@@ -178,7 +180,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 16, 
-    color: '#007BFF', 
+    color: '#732626', 
     fontWeight: 'bold', 
     marginLeft: 5,
   },
