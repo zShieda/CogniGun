@@ -117,8 +117,8 @@ const styles = StyleSheet.create({
   tinyLogo: {
     width: 150,
     height: 150,
-    marginBottom: 20,
-    marginTop:20,
+    marginBottom: 10,
+    marginTop:10,
   },
   instructionText: {
     fontSize: 18,
