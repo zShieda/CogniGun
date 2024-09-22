@@ -6,8 +6,8 @@ const HomeScreen = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Fetch from the backend API
-    fetch('http://localhost:8000/api/test/')
+    // Replace localhost with the IP address of your laptop
+    fetch('http://192.168.254.111:8080/api/test/')
       .then(response => response.json())
       .then(data => {
         setMessage(data.message);  // Update message state with the response
