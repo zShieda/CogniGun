@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +30,22 @@ SECRET_KEY = 'django-insecure-um-bca1b%fkun!ffl3mbf00%d182010rlnv=tl(gs0ni*7rue+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.254.111']   
+ALLOWED_HOSTS = ["*"]   
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
 
 
 # Application definition
@@ -38,7 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'corsheaders',  # Added corsheaders here
+    'corsheaders', 
     'api',
 ]
 
@@ -132,3 +152,4 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:8081',  # Frontend app address
     'http://192.168.254.111:8080',  # Django backend address
 ]
+CORS_ALLOW_CREDENTIALS = True
