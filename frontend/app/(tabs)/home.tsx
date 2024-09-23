@@ -4,6 +4,17 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 const HomeScreen = () => {
   const [selectedTab, setSelectedTab] = useState('profile'); 
 
+  const renderContent = () => {
+    return (
+      <View style={styles.imageContainer}>
+        <Image
+          source={require('../assets/tranpLOGO.png')}
+          style={styles.contentImage}
+        />
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       {/* Sidebar */}
