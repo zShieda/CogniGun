@@ -5,4 +5,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id","username", "password"]
-        extra_kwargs = 
+        extra_kwargs = {"password": {"write_only": True}}
+
+    def create(self, validated_data):
+        user =  user.object.create_user(**validated_data)
+        return user
+    
+    zilloh
