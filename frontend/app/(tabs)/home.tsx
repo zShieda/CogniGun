@@ -4,37 +4,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 const HomeScreen = () => {
   const [selectedTab, setSelectedTab] = useState('profile'); 
 
-<<<<<<< Updated upstream
-  useEffect(() => {
-    // Replace localhost with the IP address of your laptop
-    fetch('http://192.168.1.3:8080/api/test/')
-      .then(response => response.json())
-      .then(data => {
-        setMessage(data.message);  // Update message state with the response
-        setLoading(false);  // Set loading to false after fetching data
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-=======
-  const renderContent = () => {
-    return (
-      <View style={styles.imageContainer}>
-        <Image
-          source={require('../assets/tranpLOGO.png')}
-          style={styles.contentImage}
-        />
-      </View>
-    );
-  };
->>>>>>> Stashed changes
-
   return (
     <View style={styles.container}>
       {/* Sidebar */}
