@@ -1,7 +1,7 @@
-# api/urls.py
 from django.urls import path
-from .views import test_api
+from . import views
 
 urlpatterns = [
-    path('test/', test_api, name='test_api'),
+    path("notes/", views.NoteListCreate.as_view(), name="note-list"),
+    path("notes/delete/<int:pk>/", views.NoteDelete.as_view(), name="delete-note"),
 ]
