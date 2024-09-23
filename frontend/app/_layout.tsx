@@ -1,8 +1,18 @@
 import { Stack } from "expo-router";
 
 const StackLayout = () => {
-  return
+  return (
     <Stack>
-      <Stack.Screen name="(tabs)"/>
+      <Stack.Screen
+        name="Register"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="home"
+        options={{ headerShown: false }}
+      />
     </Stack>
-}
+  );
+};
+
+export default StackLayout;
