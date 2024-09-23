@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from "expo-router"; // Import useRouter from expo-router
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter(); // Initialize useRouter for navigation
 
   const handleLogin = async () => {
     try {
@@ -12,14 +15,28 @@ const Login = () => {
         username: email,
         password
       });
-      // Store the token securely (e.g., AsyncStorage)
+
       const token = response.data.access;
+
+      // Store the token securely using AsyncStorage
+      await AsyncStorage.setItem('userToken', token);
+
       Alert.alert('Login Successful', 'Welcome back!');
-      // Navigate to the home screen or another screen
       console.log('Token received:', token);
-    } catch (error: any) {  // Add error type assertion
-      console.error('Login error:', error.response?.data || error.message);
-      Alert.alert('Login Failed', error.response?.data?.error || 'Something went wrong');
+
+      // Navigate to the 'home' screen after login
+      router.push('/Home'); // Redirect to the home screen
+
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // If the error is an Axios error, you can safely access response
+        console.error('Login error:', error.response?.data || error.message);
+        Alert.alert('Login Failed', error.response?.data?.error || 'Something went wrong');
+      } else {
+        // For other types of errors
+        console.error('Unexpected error:', error);
+        Alert.alert('Login Failed', 'An unexpected error occurred');
+      }
     }
   };
 

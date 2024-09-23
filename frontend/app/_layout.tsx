@@ -4,7 +4,7 @@ const StackLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="Register"
+        name="Login" // Make sure "Login" is part of the stack
         options={{ headerShown: false }}
       />
       <Stack.Screen
