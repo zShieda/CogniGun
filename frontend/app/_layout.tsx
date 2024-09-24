@@ -2,15 +2,9 @@ import { Stack } from "expo-router";
 
 const StackLayout = () => {
   return (
-    <Stack>
-      <Stack.Screen
-        name="Login" // Make sure "Login" is part of the stack
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="home"
-        options={{ headerShown: false }}
-      />
+    <Stack screenOptions={{headerShown: false}}>
+      <Stack.Screen name="(tabs)"/>
+      <Stack.Screen name="LandingPage"/>
     </Stack>
   );
 };
