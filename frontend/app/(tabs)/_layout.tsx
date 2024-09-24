@@ -7,13 +7,13 @@ export default () => {
     <Tabs
       screenOptions={{
         tabBarShowLabel: false, // Hide the labels to show icons only
-        tabBarStyle: {
+        tabBarStyle: {  
           height: 60, // Adjust tab bar height if needed
           backgroundColor: '#fff', // White background for the tab bar
           borderTopWidth: 0, // Remove the top border
           position: 'absolute', // Make it floating
           borderRadius: 30, // Rounded corners
-          marginHorizontal: 10, // Add some horizontal margin to separate from screen edges
+          marginHorizontal: 20, // Add some horizontal margin to separate from screen edges
           marginBottom: 10, // Adjust bottom margin if needed
           elevation: 10, // Add shadow for Android
           shadowColor: '#000', // Shadow color for iOS
@@ -29,14 +29,20 @@ export default () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
+            <View style={{
+                backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
+                borderRadius: 30,
+                paddingHorizontal: 15, // Adjusted padding to increase space
+                paddingVertical: 10, // Added vertical padding for better touch area
+              }}>
             <Image
               source={require('../assets/Data-analysis.png')}
               style={{
-                width: 24,
-                height: 24,
-                tintColor: focused ? '#732626' : '#999', // Change color when tab is focused
+                width: 30,
+                height: 30,
               }}
             />
+            </View>
           ),
         }}
       />
@@ -47,14 +53,20 @@ export default () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
+            <View style={{
+                backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
+                borderRadius: 30,
+                paddingHorizontal: 15, // Adjusted padding to increase space
+                paddingVertical: 10, // Added vertical padding for better touch area
+              }}>
             <Image
               source={require('../assets/Galery.png')}
               style={{
-                width: 24,
-                height: 24,
-                tintColor: focused ? '#732626' : '#999', // Change color when tab is focused
+                width: 30,
+                height: 30,
               }}
             />
+            </View>
           ),
         }}
       />
@@ -73,20 +85,25 @@ export default () => {
               justifyContent: 'center',
               alignItems: 'center',
               marginBottom: 50, // Make the button float above the tab bar
-              shadowColor: '#000', // Add shadow for depth
+              shadowColor: '#000000', // Add shadow for depth
               shadowOffset: { width: 0, height: 5 },
-              shadowOpacity: 0.3,
+              shadowOpacity: 1,
               shadowRadius: 5,
               elevation: 5, // Shadow for Android
             }}>
-              <Image
-                source={require('../assets/Camera.png')}
-                style={{
-                  width: 35,
-                  height: 35,
-                  tintColor: focused ? '#732626' : '#999', // Change color when tab is focused
-                }}
-              />
+              <View style={{
+                backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
+                borderRadius: 30,
+                padding: 10, // Increased padding for a wider background
+              }}>
+            <Image
+              source={require('../assets/Camera.png')}
+              style={{
+                width: 30,
+                height: 30,
+              }}
+            />
+            </View>
             </View>
           ),
         }}
@@ -98,14 +115,20 @@ export default () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
+            <View style={{
+                backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
+                borderRadius: 30,
+                paddingHorizontal: 15, // Adjusted padding to increase space
+                paddingVertical: 10, // Added vertical padding for better touch area
+              }}>
             <Image
               source={require('../assets/Handgun.png')}
               style={{
-                width: 24,
-                height: 24,
-                tintColor: focused ? '#732626' : '#999', // Change color when tab is focused
+                width: 30,
+                height: 30,
               }}
             />
+            </View>
           ),
         }}
       />
@@ -116,14 +139,20 @@ export default () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
+            <View style={{
+                backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
+                borderRadius: 30,
+                paddingHorizontal: 15, // Adjusted padding to increase space
+                paddingVertical: 10, // Added vertical padding for better touch area
+              }}>
             <Image
               source={require('../assets/Profile.png')}
               style={{
-                width: 24,
-                height: 24,
-                tintColor: focused ? '#732626' : '#999', // Change color when tab is focused
+                width: 30,
+                height: 30,
               }}
             />
+            </View>
           ),
         }}
       />
