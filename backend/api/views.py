@@ -1,4 +1,3 @@
-
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -8,13 +7,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.hashers import make_password
 import torch
-from rest_framework.decorators import api_view
 from django.core.files.storage import default_storage
 from PIL import Image
 import os
+from django.http import JsonResponse
+from ultralytics import YOLO
+import cv2
+import numpy as np
 
-
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+# Load the YOLOv8 model
+model = YOLO('yolov8n.pt')
 
 # Custom registration view
 @api_view(['POST'])
@@ -44,4 +46,36 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     # You can customize the JWT login behavior here if needed
     pass
 
+# Object detection endpoint using YOLOv8
+@api_view(['POST'])  # Allow only POST requests
+@permission_classes([AllowAny])  # Optional: Use permission as needed
+def detect_objects(request):
+    try:
+        # Get the uploaded image
+        image_file = request.FILES['image']
+        
+        # Convert image to a numpy array and decode it
+        img_array = np.frombuffer(image_file.read(), np.uint8)  # Use np.frombuffer instead of np.fromstring
+        img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
 
+        # Run YOLOv8 model on the image
+        results = model(img)
+
+        # Collect detection results
+        detections = []
+        for r in results:
+            for i, box in enumerate(r.boxes.xyxy.tolist()):
+                detections.append({
+                    "xmin": box[0], 
+                    "ymin": box[1], 
+                    "xmax": box[2], 
+                    "ymax": box[3],
+                    "confidence": r.boxes.conf[i].item(),
+                    "class": r.boxes.cls[i].item()
+                })
+
+        # Return the detections as a JSON response
+        return JsonResponse({"detections": detections})
+    
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
