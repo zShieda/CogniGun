@@ -12,14 +12,14 @@ export default () => {
           backgroundColor: '#fff', // White background for the tab bar
           borderTopWidth: 0, // Remove the top border
           position: 'absolute', // Make it floating
-          borderRadius: 30, // Rounded corners
-          marginHorizontal: 20, // Add some horizontal margin to separate from screen edges
+          borderRadius: 15, // Rounded corners
+          marginHorizontal: 10, // Add some horizontal margin to separate from screen edges
           marginBottom: 10, // Adjust bottom margin if needed
-          elevation: 10, // Add shadow for Android
+          elevation: 5, // Add shadow for Android
           shadowColor: '#000', // Shadow color for iOS
-          shadowOffset: { width: 0, height: 5 }, // Shadow positioning
-          shadowOpacity: 0.3,
-          shadowRadius: 5,
+          shadowOffset: { width: 0, height: 2 }, // Shadow positioning
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
         },
       }}
     >
@@ -31,14 +31,14 @@ export default () => {
           tabBarIcon: ({ focused }) => (
             <View style={{
                 backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
-                borderRadius: 30,
-                paddingHorizontal: 15, // Adjusted padding to increase space
-                paddingVertical: 10, // Added vertical padding for better touch area
+                borderRadius: 12,
+                paddingHorizontal: 15,
+                paddingVertical: 8,
               }}>
             <Image
               source={require('../assets/Data-analysis.png')}
               style={{
-                width: 30,
+                width: 35,
                 height: 30,
               }}
             />
@@ -55,14 +55,14 @@ export default () => {
           tabBarIcon: ({ focused }) => (
             <View style={{
                 backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
-                borderRadius: 30,
-                paddingHorizontal: 15, // Adjusted padding to increase space
-                paddingVertical: 10, // Added vertical padding for better touch area
+                borderRadius: 12,
+                paddingHorizontal: 15,
+                paddingVertical: 8,
               }}>
             <Image
               source={require('../assets/Galery.png')}
               style={{
-                width: 30,
+                width: 35,
                 height: 30,
               }}
             />
@@ -77,33 +77,49 @@ export default () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <View style={{
-              width: 70, // Width of the camera button
-              height: 70, // Height of the camera button
-              backgroundColor: '#fff', // White background for the camera button
-              borderRadius: 35, // Make the camera button fully circular
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginBottom: 50, // Make the button float above the tab bar
-              shadowColor: '#000000', // Add shadow for depth
-              shadowOffset: { width: 0, height: 5 },
-              shadowOpacity: 1,
-              shadowRadius: 5,
-              elevation: 5, // Shadow for Android
-            }}>
+            <View style={{ alignItems: 'center' }}>
+              {/* Circle Background */}
               <View style={{
-                backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
-                borderRadius: 30,
-                padding: 10, // Increased padding for a wider background
+                position: 'absolute',
+                width: 92, // Width of the circle
+                height: 92, // Height of the circle
+                backgroundColor: '#f3f3f3', // Circle color
+                borderRadius: 45, // Make it circular
+                justifyContent: 'center',
+                alignItems: 'center',
+                bottom: 50, // Position above the tab bar
+                zIndex: -1, // Send it to the back
+              }} />
+              
+              {/* Camera Button */}
+              <View style={{
+                width: 72,
+                height: 72,
+                backgroundColor: '#fff',
+                borderRadius: 35,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 60,
+                shadowColor: '#000000',
+                shadowOffset: { width: 0, height: 5 },
+                shadowOpacity: 1,
+                shadowRadius: 5,
+                elevation: 5,
               }}>
-            <Image
-              source={require('../assets/Camera.png')}
-              style={{
-                width: 30,
-                height: 30,
-              }}
-            />
-            </View>
+                <View style={{
+                  backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
+                  borderRadius: 70,
+                  padding: 9,
+                }}>
+                  <Image
+                    source={require('../assets/Camera.png')}
+                    style={{
+                      width: 35,
+                      height: 35,
+                    }}
+                  />
+                </View>
+              </View>
             </View>
           ),
         }}
@@ -117,14 +133,14 @@ export default () => {
           tabBarIcon: ({ focused }) => (
             <View style={{
                 backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
-                borderRadius: 30,
-                paddingHorizontal: 15, // Adjusted padding to increase space
-                paddingVertical: 10, // Added vertical padding for better touch area
+                borderRadius: 12,
+                paddingHorizontal: 15,
+                paddingVertical: 8,
               }}>
             <Image
               source={require('../assets/Handgun.png')}
               style={{
-                width: 30,
+                width: 35,
                 height: 30,
               }}
             />
@@ -141,14 +157,14 @@ export default () => {
           tabBarIcon: ({ focused }) => (
             <View style={{
                 backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
-                borderRadius: 30,
-                paddingHorizontal: 15, // Adjusted padding to increase space
-                paddingVertical: 10, // Added vertical padding for better touch area
+                borderRadius: 12,
+                paddingHorizontal: 15,
+                paddingVertical: 8,
               }}>
             <Image
               source={require('../assets/Profile.png')}
               style={{
-                width: 30,
+                width: 35,
                 height: 30,
               }}
             />
@@ -158,4 +174,4 @@ export default () => {
       />
     </Tabs>
   );
-};
+}
