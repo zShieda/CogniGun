@@ -7,20 +7,35 @@ export default function CameraPage() {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [detections, setDetections] = useState<any[]>([]);
 
-  const pickImage = async () => {
+  // Function to launch camera
+  const pickImageFromCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     });
 
-    // Check if the result contains assets and handle the uri correctly
     if (!result.canceled && result.assets) {
       setImageUri(result.assets[0].uri);
       detectObjects(result.assets[0].uri);
     }
   };
 
+  // Function to pick image from gallery
+  const pickImageFromGallery = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets) {
+      setImageUri(result.assets[0].uri);
+      detectObjects(result.assets[0].uri);
+    }
+  };
+
+  // Function to send image to Django backend for object detection
   const detectObjects = async (uri: string) => {
     let localUri = uri;
     let filename = localUri.split('/').pop();
@@ -44,13 +59,19 @@ export default function CameraPage() {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button title="Take a picture" onPress={pickImage} />
+      {/* Buttons to choose between camera and gallery */}
+      <Button title="Take a picture from camera" onPress={pickImageFromCamera} />
+      <Button title="Choose an image from gallery" onPress={pickImageFromGallery} />
+
       {imageUri && <Image source={{ uri: imageUri }} style={{ width: 200, height: 200 }} />}
+
       {detections.length > 0 && (
         <View>
           {detections.map((detection, index) => (
             <View key={index}>
-              <Text>Detected Object: {detection.class} Confidence: {detection.confidence}</Text>
+              <Text>
+                Detected Object: {detection.class} Confidence: {detection.confidence}
+              </Text>
             </View>
           ))}
         </View>
