@@ -16,7 +16,7 @@ import cv2
 import numpy as np
 
 # Load the YOLOv8 model
-model = YOLO('yolov8n.pt')
+model = YOLO("yolov9c.pt")
 
 # Custom registration view
 @api_view(['POST'])

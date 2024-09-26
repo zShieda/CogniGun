@@ -31,7 +31,7 @@ export default function CameraPage() {
     formData.append('image', { uri: localUri, name: filename, type } as any);
 
     try {
-      const response = await axios.post('http://192.168.1.2:8000/detect/', formData, {
+      const response = await axios.post('http://192.168.1.2:8000/api/detect/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
