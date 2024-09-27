@@ -154,3 +154,12 @@ CORS_ALLOWED_ORIGINS = [
     
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+ORIGINAL_IMAGES_DIR = os.path.join(MEDIA_ROOT, 'original_images')
+DETECTED_IMAGES_DIR = os.path.join(MEDIA_ROOT, 'detected_images')
+
+os.makedirs(ORIGINAL_IMAGES_DIR, exist_ok=True)
+os.makedirs(DETECTED_IMAGES_DIR, exist_ok=True)

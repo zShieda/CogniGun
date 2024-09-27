@@ -1,43 +1,83 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, FlatList, Image, Text } from 'react-native';
 
-const Gallery = () => {
-  const [selectedTab, setSelectedTab] = useState('profile'); 
+// Define the structure of the image data
+interface ImageItem {
+  id: string; // or number, depending on your backend response
+  original_image_url: string;
+  detected_image_url: string;
+}
 
-  const renderContent = () => {
-    return (
-      <View style={styles.imageContainer}>
-        <Image
-          source={require('../assets/tranpLOGO.png')}
-          style={styles.contentImage}
-        />
-      </View>
-    );
+// Define the types for the ImageDisplay component's props
+interface ImageDisplayProps {
+  originalImageUrl: string;
+  detectedImageUrl: string;
+}
+
+// ImageDisplay component
+const ImageDisplay: React.FC<ImageDisplayProps> = ({ originalImageUrl, detectedImageUrl }) => (
+  <View style={styles.imageContainer}>
+    <Text>Original Image:</Text>
+    <Image source={{ uri: originalImageUrl }} style={styles.image} />
+    <Text>Detected Image:</Text>
+    <Image source={{ uri: detectedImageUrl }} style={styles.image} />
+  </View>
+);
+
+// Main Gallery component
+const Gallery: React.FC = () => {
+  const [images, setImages] = useState<ImageItem[]>([]); // Use the ImageItem type here
+
+  useEffect(() => {
+    fetchImages();
+  }, []);
+
+  const fetchImages = async () => {
+    try {
+      const response = await fetch('http://192.168.254.111:8000/api/images/');
+      const data = await response.json();
+      setImages(data);
+    } catch (error) {
+      console.error('Error fetching images:', error);
+    }
   };
-
+  
+  // Use the correct URLs for the ImageDisplay component
+  const renderItem = ({ item }: { item: ImageItem }) => (
+    <ImageDisplay
+      originalImageUrl={item.original_image_url} // Ensure this points to the correct backend URL
+      detectedImageUrl={item.detected_image_url}
+    />
+  );
   return (
     <View style={styles.container}>
-      {renderContent()}
+      <FlatList
+        data={images}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id} // Access id correctly here
+      />
     </View>
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
+    padding: 10,
   },
- 
   imageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
   },
-  contentImage: {
-    width: 200, 
+  image: {
+    width: '100%',
     height: 200,
+    marginVertical: 5,
     resizeMode: 'contain',
-    opacity: 0.4,
   },
 });
 

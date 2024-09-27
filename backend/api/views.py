@@ -6,17 +6,15 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.hashers import make_password
-import torch
 from django.core.files.storage import default_storage
-from PIL import Image
-import os
 from django.http import JsonResponse
 from ultralytics import YOLO
+from django.conf import settings
 import cv2
 import numpy as np
+import os
 
-
-# Load the YOLOv9 model
+# Load YOLOv9 model
 model = YOLO("yolov9c.pt")
 
 # Custom registration view
@@ -44,7 +42,6 @@ def register(request):
 
 # Custom JWT login view (optional)
 class CustomTokenObtainPairView(TokenObtainPairView):
-    # You can customize the JWT login behavior here if needed
     pass
 
 # Object detection endpoint using YOLOv9
@@ -52,12 +49,31 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 @permission_classes([AllowAny])
 def detect_objects(request):
     try:
+        # Save the uploaded image to 'original_images' directory
         image_file = request.FILES['image']
-        img_array = np.frombuffer(image_file.read(), np.uint8)
-        img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        original_image_path = os.path.join(settings.ORIGINAL_IMAGES_DIR, image_file.name)
+        
+        with default_storage.open(original_image_path, 'wb+') as destination:
+            for chunk in image_file.chunks():
+                destination.write(chunk)
 
+        # Load the saved image from disk for processing (not directly from request)
+        img = cv2.imread(original_image_path)
+
+        # Perform object detection using YOLOv9
         results = model(img)
 
+        # Draw bounding boxes on the image
+        for r in results:
+            for i, box in enumerate(r.boxes.xyxy.tolist()):
+                # Draw a rectangle around each detected object
+                cv2.rectangle(img, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
+
+        # Save the image with bounding boxes to 'detected_images' directory
+        detected_image_path = os.path.join(settings.DETECTED_IMAGES_DIR, f"detected_{image_file.name}")
+        cv2.imwrite(detected_image_path, img)
+
+        # Prepare detection data
         detections = []
         for r in results:
             for i, box in enumerate(r.boxes.xyxy.tolist()):
@@ -70,7 +86,12 @@ def detect_objects(request):
                     "class": r.names[int(r.boxes.cls[i])]  # Use class name instead of ID
                 })
 
-        return JsonResponse({"detections": detections})
-    
+        # Return response with detections and image URLs
+        return JsonResponse({
+            "detections": detections,
+            "original_image_url": f"{settings.MEDIA_URL}original_images/{image_file.name}",
+            "detected_image_url": f"{settings.MEDIA_URL}detected_images/detected_{image_file.name}"
+        })
+
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
