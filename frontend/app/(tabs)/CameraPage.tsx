@@ -1,81 +1,97 @@
 import React, { useState } from 'react';
-import { Button, Image, View, Text } from 'react-native';
+import { View, Button, Image, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 
-export default function CameraPage() {
-  const [imageUri, setImageUri] = useState<string | null>(null);
+const CameraPage: React.FC = () => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [detections, setDetections] = useState<any[]>([]);
 
-  // Function to launch camera
-  const pickImageFromCamera = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  const openImagePickerAsync = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert("Permission to access gallery is required!");
+      return;
+    }
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
+      aspect: [4, 3],
       quality: 1,
     });
 
-    if (!result.canceled && result.assets) {
-      setImageUri(result.assets[0].uri);
-      detectObjects(result.assets[0].uri);
+    if (!pickerResult.canceled) {
+      setSelectedImage(pickerResult.assets[0].uri);
     }
   };
 
-  // Function to pick image from gallery
-  const pickImageFromGallery = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  const openCameraAsync = async () => {
+    let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert("Permission to access camera is required!");
+      return;
+    }
+    let cameraResult = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
+      aspect: [4, 3],
       quality: 1,
     });
 
-    if (!result.canceled && result.assets) {
-      setImageUri(result.assets[0].uri);
-      detectObjects(result.assets[0].uri);
+    if (!cameraResult.canceled) {
+      setSelectedImage(cameraResult.assets[0].uri);
     }
   };
 
-  // Function to send image to Django backend for object detection
-  const detectObjects = async (uri: string) => {
-    let localUri = uri;
-    let filename = localUri.split('/').pop();
-    let match = /\.(\w+)$/.exec(filename!);
-    let type = match ? `image/${match[1]}` : `image`;
+  const uriToBlob = async (uri: string) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    return blob;
+  };
 
-    let formData = new FormData();
-    formData.append('image', { uri: localUri, name: filename, type } as any);
+  const uploadImage = async () => {
+    if (!selectedImage) return;
 
+    const formData = new FormData();
     try {
-      const response = await axios.post('http://192.168.1.2:8000/api/detect/', formData, {
+      const imageBlob = await uriToBlob(selectedImage);
+      formData.append('image', imageBlob, 'photo.jpg');
+
+      const response = await axios.post('http://192.168.254.111:8000/api/detect/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
+
       setDetections(response.data.detections);
     } catch (error) {
-      console.error('Error detecting objects:', error);
+      console.error("Error uploading image: ", error);
+      alert("Error uploading image");
     }
   };
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      {/* Buttons to choose between camera and gallery */}
-      <Button title="Take a picture from camera" onPress={pickImageFromCamera} />
-      <Button title="Choose an image from gallery" onPress={pickImageFromGallery} />
-
-      {imageUri && <Image source={{ uri: imageUri }} style={{ width: 200, height: 200 }} />}
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Button title="Pick a photo from gallery" onPress={openImagePickerAsync} />
+      <Button title="Take a photo with camera" onPress={openCameraAsync} /> 
+      
+      {selectedImage && (
+        <View>
+          <Image source={{ uri: selectedImage }} style={{ width: 300, height: 300, marginVertical: 20 }} />
+          <Button title="Upload and Detect Objects" onPress={uploadImage} />
+        </View>
+      )}
 
       {detections.length > 0 && (
-        <View>
+        <View style={{ marginTop: 20 }}>
+          <Text>Detections:</Text>
           {detections.map((detection, index) => (
-            <View key={index}>
-              <Text>
-                Detected Object: {detection.class} Confidence: {detection.confidence}
-              </Text>
-            </View>
+            <Text key={index}>
+              Object {index + 1}: {detection.class} - {Math.round(detection.confidence * 100)}% confidence
+            </Text>
           ))}
         </View>
       )}
     </View>
   );
-}
+};
+
+export default CameraPage;

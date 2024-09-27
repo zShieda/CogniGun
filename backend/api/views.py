@@ -47,34 +47,28 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     pass
 
 # Object detection endpoint using YOLOv9
-@api_view(['POST'])  # Allow only POST requests
-@permission_classes([AllowAny])  # Optional: Use permission as needed
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def detect_objects(request):
     try:
-        # Get the uploaded image
         image_file = request.FILES['image']
-        
-        # Convert image to a numpy array and decode it
         img_array = np.frombuffer(image_file.read(), np.uint8)
         img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
 
-        # Run YOLOv9 model on the image
         results = model(img)
 
-        # Collect detection results
         detections = []
         for r in results:
             for i, box in enumerate(r.boxes.xyxy.tolist()):
                 detections.append({
-                    "xmin": box[0], 
-                    "ymin": box[1], 
-                    "xmax": box[2], 
+                    "xmin": box[0],
+                    "ymin": box[1],
+                    "xmax": box[2],
                     "ymax": box[3],
-                    "confidence": r.boxes.conf[i].item(),
-                    "class": r.boxes.cls[i].item()
+                    "confidence": float(r.boxes.conf[i]),
+                    "class": r.names[int(r.boxes.cls[i])]  # Use class name instead of ID
                 })
 
-        # Return the detections as a JSON response
         return JsonResponse({"detections": detections})
     
     except Exception as e:
