@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Button, Image, Text } from 'react-native';
+import { View, Button, Image, Text, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 
@@ -41,30 +41,37 @@ const CameraPage: React.FC = () => {
     }
   };
 
-  const uriToBlob = async (uri: string) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    return blob;
-  };
-
   const uploadImage = async () => {
     if (!selectedImage) return;
 
     const formData = new FormData();
     try {
-      const imageBlob = await uriToBlob(selectedImage);
-      formData.append('image', imageBlob, 'photo.jpg');
+      const filename = selectedImage.split('/').pop() || 'photo.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image';
 
+      formData.append('image', {
+        uri: Platform.OS === 'ios' ? selectedImage.replace('file://', '') : selectedImage,
+        name: filename,
+        type,
+      } as any);
+
+      console.log('Uploading image...');
       const response = await axios.post('http://192.168.254.111:8000/api/detect/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        timeout: 10000, // Increased timeout to 10 seconds
       });
 
+      console.log('Upload response:', response.data);
       setDetections(response.data.detections);
     } catch (error) {
       console.error("Error uploading image: ", error);
-      alert("Error uploading image");
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error details:", error.response?.data);
+      }
+      alert("Error uploading image. Check console for details.");
     }
   };
 

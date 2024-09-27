@@ -15,6 +15,7 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 
+
 # Load the YOLOv9 model
 model = YOLO("yolov9c.pt")
 
