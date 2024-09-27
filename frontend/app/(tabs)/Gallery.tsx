@@ -1,83 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, Image, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Image, ScrollView, Text, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 
-// Define the structure of the image data
-interface ImageItem {
-  id: string; // or number, depending on your backend response
-  original_image_url: string;
-  detected_image_url: string;
-}
+const { width } = Dimensions.get('window');
+const imageSize = (width - 36) / 3; // 3 images per row with 12 padding on sides
 
-// Define the types for the ImageDisplay component's props
-interface ImageDisplayProps {
-  originalImageUrl: string;
-  detectedImageUrl: string;
-}
+type ImageType = string;
 
-// ImageDisplay component
-const ImageDisplay: React.FC<ImageDisplayProps> = ({ originalImageUrl, detectedImageUrl }) => (
-  <View style={styles.imageContainer}>
-    <Text>Original Image:</Text>
-    <Image source={{ uri: originalImageUrl }} style={styles.image} />
-    <Text>Detected Image:</Text>
-    <Image source={{ uri: detectedImageUrl }} style={styles.image} />
-  </View>
-);
-
-// Main Gallery component
 const Gallery: React.FC = () => {
-  const [images, setImages] = useState<ImageItem[]>([]); // Use the ImageItem type here
+  const [originalImages, setOriginalImages] = useState<ImageType[]>([]);
+  const [detectedImages, setDetectedImages] = useState<ImageType[]>([]);
+  const [showOriginal, setShowOriginal] = useState<boolean>(true);
 
   useEffect(() => {
-    fetchImages();
+    fetch('http://192.168.254.111:8000/api/images/')
+      .then((response) => response.json())
+      .then((data) => {
+        setOriginalImages(data.original_images);
+        setDetectedImages(data.detected_images);
+      })
+      .catch((error) => console.error(error));
   }, []);
 
-  const fetchImages = async () => {
-    try {
-      const response = await fetch('http://192.168.254.111:8000/api/images/');
-      const data = await response.json();
-      setImages(data);
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    }
-  };
-  
-  // Use the correct URLs for the ImageDisplay component
-  const renderItem = ({ item }: { item: ImageItem }) => (
-    <ImageDisplay
-      originalImageUrl={item.original_image_url} // Ensure this points to the correct backend URL
-      detectedImageUrl={item.detected_image_url}
-    />
-  );
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={images}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id} // Access id correctly here
-      />
+  const renderImageGrid = (images: ImageType[]) => (
+    <View style={styles.imageGrid}>
+      {images.map((image, index) => (
+        <Image
+          key={index}
+          source={{ uri: `http://192.168.254.111:8000${image}` }}
+          style={styles.image}
+        />
+      ))}
     </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.button, showOriginal && styles.activeButton]}
+            onPress={() => setShowOriginal(true)}
+          >
+            <Text style={[styles.buttonText, showOriginal && styles.activeButtonText]}>Original Images</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, !showOriginal && styles.activeButton]}
+            onPress={() => setShowOriginal(false)}
+          >
+            <Text style={[styles.buttonText, !showOriginal && styles.activeButtonText]}>Detected Images</Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView style={styles.scrollView}>
+          <Text style={styles.sectionTitle}>
+            {showOriginal ? 'Original Images' : 'Detected Images'}
+          </Text>
+          {renderImageGrid(showOriginal ? originalImages : detectedImages)}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
   container: {
     flex: 1,
-    padding: 10,
+    paddingTop: StatusBar.currentHeight || 0,
   },
-  imageContainer: {
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#ccc',
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 15,
+    backgroundColor: '#fff',
+    marginTop: 20,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 5,
-    padding: 10,
+    backgroundColor: '#e0e0e0',
+  },
+  activeButton: {
+    backgroundColor: '#007AFF',
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  activeButtonText: {
+    color: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 12,
+    marginTop: 10,
+    marginBottom: 10,
+    color: '#333',
+  },
+  imageGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 6,
   },
   image: {
-    width: '100%',
-    height: 200,
-    marginVertical: 5,
-    resizeMode: 'contain',
+    width: imageSize,
+    height: imageSize,
+    margin: 6,
+    borderRadius: 8,
   },
 });
 

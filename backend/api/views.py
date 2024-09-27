@@ -95,3 +95,26 @@ def detect_objects(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def list_images(request):
+    original_images = []
+    detected_images = []
+
+    original_images_dir = settings.ORIGINAL_IMAGES_DIR
+    detected_images_dir = settings.DETECTED_IMAGES_DIR
+
+    # Fetch original images
+    for filename in os.listdir(original_images_dir):
+        if filename.endswith(('.png', '.jpg', '.jpeg')):
+            original_images.append(f"{settings.MEDIA_URL}original_images/{filename}")
+
+    # Fetch detected images
+    for filename in os.listdir(detected_images_dir):
+        if filename.endswith(('.png', '.jpg', '.jpeg')):
+            detected_images.append(f"{settings.MEDIA_URL}detected_images/{filename}")
+
+    return JsonResponse({
+        'original_images': original_images,
+        'detected_images': detected_images
+    })
