@@ -63,6 +63,20 @@ def detect_objects(request):
         # Perform object detection using YOLOv9
         results = model(img)
 
+        # Extract class names from detection results
+        detected_classes = set()
+        for r in results:
+            for i in range(len(r.boxes)):
+                class_id = int(r.boxes.cls[i])
+                class_name = r.names[class_id]
+                detected_classes.add(class_name)
+
+        # Generate a dynamic filename based on detected classes
+        if detected_classes:
+            detected_classes_str = "_".join(detected_classes)  # Join all detected classes with underscores
+        else:
+            detected_classes_str = "no_detection"
+
         # Draw bounding boxes on the image
         for r in results:
             for i, box in enumerate(r.boxes.xyxy.tolist()):
@@ -70,7 +84,8 @@ def detect_objects(request):
                 cv2.rectangle(img, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
 
         # Save the image with bounding boxes to 'detected_images' directory
-        detected_image_path = os.path.join(settings.DETECTED_IMAGES_DIR, f"detected_{image_file.name}")
+        detected_image_name = f"detected_{detected_classes_str}_{image_file.name}"
+        detected_image_path = os.path.join(settings.DETECTED_IMAGES_DIR, detected_image_name)
         cv2.imwrite(detected_image_path, img)
 
         # Prepare detection data
@@ -90,11 +105,12 @@ def detect_objects(request):
         return JsonResponse({
             "detections": detections,
             "original_image_url": f"{settings.MEDIA_URL}original_images/{image_file.name}",
-            "detected_image_url": f"{settings.MEDIA_URL}detected_images/detected_{image_file.name}"
+            "detected_image_url": f"{settings.MEDIA_URL}detected_images/{detected_image_name}"
         })
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+    
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def list_images(request):
