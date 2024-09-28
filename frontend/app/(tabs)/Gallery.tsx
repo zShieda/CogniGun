@@ -1,62 +1,120 @@
-import React, { useEffect, useState } from 'react';
-import { View, Image, ScrollView, Text, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Image, ScrollView, Text, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView, StatusBar, FlatList, ActivityIndicator, Modal } from 'react-native';
+import Constants from 'expo-constants';
+import { Ionicons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const imageSize = (width - 36) / 3; // 3 images per row with 12 padding on sides
 
 type ImageType = string;
+
+const FullScreenImage: React.FC<{ uri: string; onClose: () => void }> = ({ uri, onClose }) => (
+  <Modal animationType="fade" transparent={true} visible={true}>
+    <View style={styles.fullScreenContainer}>
+      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <Ionicons name="close" size={30} color="#fff" />
+      </TouchableOpacity>
+      <Image source={{ uri }} style={styles.fullScreenImage} resizeMode="contain" />
+    </View>
+  </Modal>
+);
 
 const Gallery: React.FC = () => {
   const [originalImages, setOriginalImages] = useState<ImageType[]>([]);
   const [detectedImages, setDetectedImages] = useState<ImageType[]>([]);
   const [showOriginal, setShowOriginal] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch('http://192.168.254.111:8000/api/images/')
-      .then((response) => response.json())
-      .then((data) => {
-        setOriginalImages(data.original_images);
-        setDetectedImages(data.detected_images);
-      })
-      .catch((error) => console.error(error));
+  const fetchImages = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('http://192.168.254.111:8000/api/images/');
+      const data = await response.json();
+      setOriginalImages(data.original_images);
+      setDetectedImages(data.detected_images);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const renderImageGrid = (images: ImageType[]) => (
-    <View style={styles.imageGrid}>
-      {images.map((image, index) => (
-        <Image
-          key={index}
-          source={{ uri: `http://192.168.254.111:8000${image}` }}
-          style={styles.image}
-        />
-      ))}
-    </View>
+  useEffect(() => {
+    fetchImages();
+  }, [fetchImages]);
+
+  const getImageName = (imageUrl: string) => {
+    return imageUrl.split('/').pop() || 'Unnamed Image';
+  };
+
+  const handleImagePress = (imageUrl: string) => {
+    setFullScreenImage(`http://192.168.254.111:8000${imageUrl}`);
+  };
+
+  const renderImageItem = ({ item }: { item: ImageType }) => (
+    <TouchableOpacity 
+      style={styles.imageContainer} 
+      onPress={() => handleImagePress(item)}
+    >
+      <Image
+        source={{ uri: `http://192.168.254.111:8000${item}` }}
+        style={styles.image}
+      />
+      <Text style={styles.imageName} numberOfLines={1} ellipsizeMode="tail">
+        {getImageName(item)}
+      </Text>
+    </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, showOriginal && styles.activeButton]}
-            onPress={() => setShowOriginal(true)}
-          >
-            <Text style={[styles.buttonText, showOriginal && styles.activeButtonText]}>Original Images</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, !showOriginal && styles.activeButton]}
-            onPress={() => setShowOriginal(false)}
-          >
-            <Text style={[styles.buttonText, !showOriginal && styles.activeButtonText]}>Detected Images</Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView style={styles.scrollView}>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.container}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, showOriginal && styles.activeButton]}
+              onPress={() => setShowOriginal(true)}
+            >
+              <Text style={[styles.buttonText, showOriginal && styles.activeButtonText]}>Original Images</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, !showOriginal && styles.activeButton]}
+              onPress={() => setShowOriginal(false)}
+            >
+              <Text style={[styles.buttonText, !showOriginal && styles.activeButtonText]}>Detected Images</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.refreshButton}
+              onPress={fetchImages}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#007AFF" />
+              ) : (
+                <Ionicons name="refresh" size={24} color="#007AFF" />
+              )}
+            </TouchableOpacity>
+          </View>
           <Text style={styles.sectionTitle}>
             {showOriginal ? 'Original Images' : 'Detected Images'}
           </Text>
-          {renderImageGrid(showOriginal ? originalImages : detectedImages)}
-        </ScrollView>
-      </View>
+          <FlatList
+            data={showOriginal ? originalImages : detectedImages}
+            renderItem={renderImageItem}
+            keyExtractor={(item, index) => index.toString()}
+            numColumns={3}
+            contentContainerStyle={styles.imageGrid}
+            scrollEnabled={false}
+          />
+        </View>
+      </ScrollView>
+      {fullScreenImage && (
+        <FullScreenImage 
+          uri={fullScreenImage} 
+          onClose={() => setFullScreenImage(null)} 
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -65,30 +123,28 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#f0f0f0',
+    paddingTop: Constants.statusBarHeight,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
   },
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight || 0,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 15,
+    paddingHorizontal: 10,
     backgroundColor: '#fff',
     marginTop: 20,
     marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
     elevation: 5,
   },
   button: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     borderRadius: 5,
     backgroundColor: '#e0e0e0',
   },
@@ -102,8 +158,8 @@ const styles = StyleSheet.create({
   activeButtonText: {
     color: '#fff',
   },
-  scrollView: {
-    flex: 1,
+  refreshButton: {
+    padding: 10,
   },
   sectionTitle: {
     fontSize: 18,
@@ -114,16 +170,38 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   imageGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
     paddingHorizontal: 6,
   },
-  image: {
+  imageContainer: {
     width: imageSize,
-    height: imageSize,
     margin: 6,
+  },
+  image: {
+    width: '100%',
+    height: imageSize,
     borderRadius: 8,
+  },
+  imageName: {
+    marginTop: 4,
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#333',
+  },
+  fullScreenContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullScreenImage: {
+    width: width,
+    height: height,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 1,
   },
 });
 
