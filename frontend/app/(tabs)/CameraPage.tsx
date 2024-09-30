@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Button, Image, Text, Platform } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 
@@ -57,7 +57,7 @@ const CameraPage: React.FC = () => {
       } as any);
 
       console.log('Uploading image...');
-      const response = await axios.post('http://192.168.254.111:8000/api/detect/', formData, {
+      const response = await axios.post('http://192.168.1.8:8000/api/detect/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -76,19 +76,29 @@ const CameraPage: React.FC = () => {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Button title="Pick a photo from gallery" onPress={openImagePickerAsync} />
-      <Button title="Take a photo with camera" onPress={openCameraAsync} /> 
-      
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',}}>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={openImagePickerAsync}>
+          <Image source={require('../assets/UploadPic.png')} style={styles.iconImage} />
+          <Text style={styles.buttonText}>Pick a photo</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={openCameraAsync}>
+          <Image source={require('../assets/TakePhoto - Copy.png')} style={styles.iconImage} />
+          <Text style={styles.buttonText}>Take a photo</Text>
+        </TouchableOpacity>
+      </View>
+
       {selectedImage && (
-        <View>
-          <Image source={{ uri: selectedImage }} style={{ width: 300, height: 300, marginVertical: 20 }} />
-          <Button title="Upload and Detect Objects" onPress={uploadImage} />
+        <View style={{ alignItems: 'center' }}>
+          <Image source={{ uri: selectedImage }} style={{ width: 340, height: 250, marginVertical: 15, borderRadius: 15, }} />
+          <TouchableOpacity style={styles.buttonResult} onPress={uploadImage}>
+            <Text style={styles.buttonTextUpload}>Upload and Detect Objects</Text>
+          </TouchableOpacity>
         </View>
       )}
 
       {detections.length > 0 && (
-        <View style={{ marginTop: 20 }}>
+        <View style={{ marginTop: 10 }}>
           <Text>Detections:</Text>
           {detections.map((detection, index) => (
             <Text key={index}>
@@ -100,5 +110,49 @@ const CameraPage: React.FC = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#ffffff',
+    padding: 10,
+    borderRadius: 15,
+    marginHorizontal: 10,
+    width: 145,
+    height: 145,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#732626',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 5,
+    shadowRadius: 2,
+    elevation: 50,
+  },
+  buttonResult: {
+    backgroundColor: '#732626',
+    paddingVertical: 15,   // Smaller padding for a smaller button
+    paddingHorizontal: 15, // Adjust the horizontal padding as needed
+    borderRadius: 20,
+  },
+  buttonText: {
+    color: 'black',
+    fontSize: 16,
+    textAlign: 'center'
+  },
+  buttonTextUpload: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center'
+  },
+  iconImage: {
+    width: 50,
+    height: 50,
+    marginBottom: 5, // Adjust this to space the image and text
+  },
+});
 
 export default CameraPage;

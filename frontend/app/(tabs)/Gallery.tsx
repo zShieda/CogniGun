@@ -4,9 +4,9 @@ import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
-const imageSize = (width - 36) / 3; // 3 images per row with 12 padding on sides
+const imageSize = (width - 49) / 3; // 3 images per row with 12 padding on sides
 
-type ImageType = string;
+type ImageType = string; // Change this if your API provides an object instead
 
 const FullScreenImage: React.FC<{ uri: string; onClose: () => void }> = ({ uri, onClose }) => (
   <Modal animationType="fade" transparent={true} visible={true}>
@@ -29,10 +29,10 @@ const Gallery: React.FC = () => {
   const fetchImages = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://192.168.254.111:8000/api/images/');
+      const response = await fetch('http://192.168.1.8:8000/api/images/');
       const data = await response.json();
-      setOriginalImages(data.original_images);
-      setDetectedImages(data.detected_images);
+      setOriginalImages(data.original_images); // Assuming this is an array of strings (URLs)
+      setDetectedImages(data.detected_images); // Assuming this is also an array of strings (URLs)
     } catch (error) {
       console.error(error);
     } finally {
@@ -49,7 +49,7 @@ const Gallery: React.FC = () => {
   };
 
   const handleImagePress = (imageUrl: string) => {
-    setFullScreenImage(`http://192.168.254.111:8000${imageUrl}`);
+    setFullScreenImage(`http://192.168.1.8:8000${imageUrl}`);
   };
 
   const renderImageItem = ({ item }: { item: ImageType }) => (
@@ -58,7 +58,7 @@ const Gallery: React.FC = () => {
       onPress={() => handleImagePress(item)}
     >
       <Image
-        source={{ uri: `http://192.168.254.111:8000${item}` }}
+        source={{ uri: `http://192.168.1.8:8000${item}` }}
         style={styles.image}
       />
       <Text style={styles.imageName} numberOfLines={1} ellipsizeMode="tail">
@@ -90,9 +90,9 @@ const Gallery: React.FC = () => {
               disabled={isLoading}
             >
               {isLoading ? (
-                <ActivityIndicator size="small" color="#007AFF" />
+                <ActivityIndicator size="small" color="#732626" />
               ) : (
-                <Ionicons name="refresh" size={24} color="#007AFF" />
+                <Ionicons name="refresh" size={24} color="#732626" />
               )}
             </TouchableOpacity>
           </View>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start', // Align buttons to the start
     alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 10,
@@ -146,14 +146,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 5,
-    backgroundColor: '#e0e0e0',
+    borderWidth: 2,
+    borderColor: '#732626',
+    backgroundColor: 'transparent',
+    marginRight: 5, // Add some margin to the right to space the buttons slightly
   },
   activeButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#732626',
   },
   buttonText: {
     fontWeight: 'bold',
-    color: '#333',
+    color: '#732626',
   },
   activeButtonText: {
     color: '#fff',
@@ -175,6 +178,16 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: imageSize,
     margin: 6,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#420707',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
   },
   image: {
     width: '100%',
@@ -192,6 +205,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative', // Ensure child elements can position relative to this container
   },
   fullScreenImage: {
     width: width,
@@ -199,10 +213,11 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 40,
-    right: 20,
-    zIndex: 1,
+    top: 40, // Adjust vertical position as needed
+    right: 20, // Float to the rightmost end
+    zIndex: 1, // Ensure it stays above other elements
   },
 });
+
 
 export default Gallery;
