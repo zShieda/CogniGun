@@ -1,0 +1,17 @@
+names:
+- Heckler - Koch -H-K-
+- Kahr
+- Norinco
+- Ruger
+- Tanfoglio
+- Walther
+nc: 6
+roboflow:
+  license: CC BY 4.0
+  project: cognigun
+  url: https://universe.roboflow.com/handguns/cognigun/dataset/5
+  version: 5
+  workspace: handguns
+test: E:\capstone\CogniGun\backend\Cognigun-5\test\images
+train: E:\capstone\CogniGun\backend\Cognigun-5\train\images
+val: E:\capstone\CogniGun\backend\Cognigun-5\valid\images
