@@ -13,27 +13,48 @@ from django.conf import settings
 import cv2
 import numpy as np
 import os
+from .models import Profile
+from rest_framework.permissions import IsAuthenticated
 
 # Load YOLOv9 model
 model = YOLO(os.path.join(settings.BASE_DIR, "runs", "detect", "yolov9_handguns2", "weights", "best.pt"))
 
-# Custom registration view
 @api_view(['POST'])
-@permission_classes([AllowAny])  # Allow unauthenticated access for registration
+@permission_classes([AllowAny])
 def register(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
+    required_fields = ['username', 'password', 'firstname', 'lastname', 'middlename', 'birthday', 'age', 'address', 'contact_number', 'id_number', 'email']
+    
+    # Validate input
+    for field in required_fields:
+        if field not in request.data:
+            return Response({'error': f'{field} is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Check if the username already exists
+    username = request.data['username']
     if User.objects.filter(username=username).exists():
         return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Create the new user
-    user = User.objects.create(username=username, password=make_password(password))
-    
-    # Optionally, create JWT token for the user upon successful registration
+    # Create user
+    user = User.objects.create(
+        username=username,
+        password=make_password(request.data['password']),
+        email=request.data['email']
+    )
+
+    # Create profile
+    Profile.objects.create(
+        user=user,
+        firstname=request.data['firstname'],
+        lastname=request.data['lastname'],
+        middlename=request.data['middlename'],
+        birthday=request.data['birthday'],
+        age=request.data['age'],
+        address=request.data['address'],
+        contact_number=request.data['contact_number'],
+        id_number=request.data['id_number']
+    )
+
     refresh = RefreshToken.for_user(user)
-    
+
     return Response({
         'message': 'User registered successfully',
         'refresh': str(refresh),
@@ -134,3 +155,21 @@ def list_images(request):
         'original_images': original_images,
         'detected_images': detected_images
     })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def profile_view(request):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+
+    user_data = {
+        'username': user.username,
+        'firstname': profile.firstname,
+        'lastname': profile.lastname,
+        'email': user.email,
+        'contact_number': profile.contact_number,
+        'address': profile.address,
+        'id_number': profile.id_number,
+    }
+
+    return Response(user_data)

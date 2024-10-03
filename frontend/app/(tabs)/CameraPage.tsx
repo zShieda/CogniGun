@@ -57,7 +57,7 @@ const CameraPage: React.FC = () => {
       } as any);
 
       console.log('Uploading image...');
-      const response = await axios.post('http://192.168.254.111:8000/api/detect/', formData, {
+      const response = await axios.post('http://192.168.1.3:8000/api/detect/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

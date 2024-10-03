@@ -2,34 +2,34 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from "expo-router"; // Import useRouter from expo-router
+import { useRouter } from "expo-router"; 
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter(); // Initialize useRouter for navigation
+  const router = useRouter(); 
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.254.111:8000/api/login/', {
+      const response = await axios.post('http://192.168.1.3:8000/api/login/', {
         username: email,
         password
       });
 
       const token = response.data.access;
 
-      // Store the token securely using AsyncStorage
+      
       await AsyncStorage.setItem('userToken', token);
 
       Alert.alert('Login Successful', 'Welcome back!');
       console.log('Token received:', token);
 
-      // Navigate to the 'home' screen after login
-      router.push('/Home'); // Redirect to the home screen
+      
+      router.push('/Home'); 
 
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        // If the error is an Axios error, you can safely access response
+        
         console.error('Login error:', error.response?.data || error.message);
         Alert.alert('Login Failed', error.response?.data?.error || 'Something went wrong');
       } else {
@@ -49,7 +49,7 @@ const Login = () => {
         <Text style={styles.title}>Login</Text>
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder="Username"
           placeholderTextColor="#888"
           value={email}
           onChangeText={setEmail}
