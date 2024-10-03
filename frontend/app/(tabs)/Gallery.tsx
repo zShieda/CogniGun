@@ -29,7 +29,7 @@ const Gallery: React.FC = () => {
   const fetchImages = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://192.168.1.8:8000/api/images/');
+      const response = await fetch('http://192.168.254.111:8000/api/images/');
       const data = await response.json();
       setOriginalImages(data.original_images); // Assuming this is an array of strings (URLs)
       setDetectedImages(data.detected_images); // Assuming this is also an array of strings (URLs)
@@ -49,7 +49,7 @@ const Gallery: React.FC = () => {
   };
 
   const handleImagePress = (imageUrl: string) => {
-    setFullScreenImage(`http://192.168.1.8:8000${imageUrl}`);
+    setFullScreenImage(`http://192.168.254.111:8000${imageUrl}`);
   };
 
   const renderImageItem = ({ item }: { item: ImageType }) => (
@@ -58,7 +58,7 @@ const Gallery: React.FC = () => {
       onPress={() => handleImagePress(item)}
     >
       <Image
-        source={{ uri: `http://192.168.1.8:8000${item}` }}
+        source={{ uri: `http://192.168.254.111:8000${item}` }}
         style={styles.image}
       />
       <Text style={styles.imageName} numberOfLines={1} ellipsizeMode="tail">

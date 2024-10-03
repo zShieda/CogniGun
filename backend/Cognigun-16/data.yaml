@@ -1,0 +1,13 @@
+names:
+- Colt m1911
+- HKVP9
+nc: 2
+roboflow:
+  license: CC BY 4.0
+  project: cognigun
+  url: https://universe.roboflow.com/handguns/cognigun/dataset/16
+  version: 16
+  workspace: handguns
+test: C:\Users\zillo\OneDrive\Documents\GitHub\CogniGun\backend\Cognigun-16\test\images
+train: C:\Users\zillo\OneDrive\Documents\GitHub\CogniGun\backend\Cognigun-16\train\images
+val: C:\Users\zillo\OneDrive\Documents\GitHub\CogniGun\backend\Cognigun-16\valid\images

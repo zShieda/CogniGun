@@ -15,7 +15,7 @@ import numpy as np
 import os
 
 # Load YOLOv9 model
-model = YOLO("yolov9c.pt")
+model = YOLO(os.path.join(settings.BASE_DIR, "runs", "detect", "yolov9_handguns2", "weights", "best.pt"))
 
 # Custom registration view
 @api_view(['POST'])
