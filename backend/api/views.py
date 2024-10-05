@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.hashers import make_password
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
@@ -65,8 +66,15 @@ def register(request):
     }, status=status.HTTP_201_CREATED)
 
 # Custom JWT login view (optional)
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        user = self.user
+        data['user_role'] = 'admin' if user.is_staff else 'regular'
+        return data
+
 class CustomTokenObtainPairView(TokenObtainPairView):
-    pass
+    serializer_class = CustomTokenObtainPairSerializer
 
 # Object detection endpoint using YOLOv9
 @api_view(['POST'])

@@ -5,35 +5,37 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router"; 
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter(); 
 
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://192.168.254.111:8000/api/login/', {
-        username: email,
+        username,
         password
       });
 
-      const token = response.data.access;
+      const { access: token, user_role } = response.data;
 
-      
       await AsyncStorage.setItem('userToken', token);
+      await AsyncStorage.setItem('userRole', user_role);
 
       Alert.alert('Login Successful', 'Welcome back!');
       console.log('Token received:', token);
+      console.log('User role:', user_role);
 
-      
-      router.push('/Home'); 
+      if (user_role === 'admin') {
+        router.push('/AdminPage');
+      } else {
+        router.push('/Home');
+      }
 
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        
         console.error('Login error:', error.response?.data || error.message);
-        Alert.alert('Login Failed', error.response?.data?.error || 'Something went wrong');
+        Alert.alert('Login Failed', error.response?.data?.detail || 'Invalid credentials');
       } else {
-        // For other types of errors
         console.error('Unexpected error:', error);
         Alert.alert('Login Failed', 'An unexpected error occurred');
       }
@@ -51,9 +53,8 @@ const Login = () => {
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="#888"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
+          value={username}
+          onChangeText={setUsername}
           autoCapitalize="none"
         />
         <TextInput
