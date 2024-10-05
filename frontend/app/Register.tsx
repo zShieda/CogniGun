@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from 'moment';  // To easily handle date formatting and age calculation
+import moment from 'moment'; 
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -18,7 +18,7 @@ const Register = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);  
 
   const handleRegister = async () => {
-    const response = await fetch('http://192.168.1.3:8000/api/register/', {
+    const response = await fetch('http://192.168.31.52:8000/api/register/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

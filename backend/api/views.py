@@ -15,6 +15,8 @@ import numpy as np
 import os
 from .models import Profile
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from .models import GPSData
 
 # Load YOLOv9 model
 model = YOLO(os.path.join(settings.BASE_DIR, "runs", "detect", "yolov9_handguns2", "weights", "best.pt"))
@@ -156,20 +158,43 @@ def list_images(request):
         'detected_images': detected_images
     })
 
+class GPSDataView(APIView):
+    def post(self, request):
+        try:
+            latitude = request.data.get('latitude')
+            longitude = request.data.get('longitude')
+
+            print("Received GPS data:", latitude, longitude)  # Debug: print received GPS data
+
+            if latitude is None or longitude is None:
+                return Response({
+                    "error": "Latitude and longitude are required"
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Save the received GPS data to the database
+            GPSData.objects.create(latitude=latitude, longitude=longitude)
+
+            return Response({
+                "message": "GPS data received",
+                "latitude": latitude,
+                "longitude": longitude
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def profile_view(request):
-    user = request.user
-    profile = Profile.objects.get(user=user)
-
-    user_data = {
-        'username': user.username,
-        'firstname': profile.firstname,
-        'lastname': profile.lastname,
-        'email': user.email,
-        'contact_number': profile.contact_number,
-        'address': profile.address,
-        'id_number': profile.id_number,
-    }
-
-    return Response(user_data)
+def get_gps_data(request):
+    try:
+        gps_data = GPSData.objects.all().order_by('-timestamp')[:100]  # Fetch last 10 entries
+        data = [
+            {"latitude": entry.latitude, "longitude": entry.longitude, "timestamp": entry.timestamp}
+            for entry in gps_data
+        ]
+        print("GPS Data fetched:", data)  # Debug: print data to console
+        return JsonResponse({"gps_data": data})
+    except Exception as e:
+        print("Error:", str(e))  # Debug: print any errors
+        return JsonResponse({"error": str(e)}, status=500)
