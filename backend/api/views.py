@@ -18,6 +18,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from .models import GPSData
 
+
 # Load YOLOv9 model
 model = YOLO(os.path.join(settings.BASE_DIR, "runs", "detect", "yolov9_handguns2", "weights", "best.pt"))
 
@@ -198,3 +199,4 @@ def get_gps_data(request):
     except Exception as e:
         print("Error:", str(e))  # Debug: print any errors
         return JsonResponse({"error": str(e)}, status=500)
+    

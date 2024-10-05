@@ -18,7 +18,7 @@ const Register = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);  
 
   const handleRegister = async () => {
-    const response = await fetch('http://192.168.31.52:8000/api/register/', {
+    const response = await fetch('http://192.168.254.111:8000/api/register/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
