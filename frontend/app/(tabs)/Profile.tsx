@@ -134,13 +134,13 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#8B0000',
-    paddingTop: 53,
+    paddingTop: 35,
     paddingBottom: 16,
     paddingHorizontal: 16,
     elevation: 4,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#ffffff',
   },

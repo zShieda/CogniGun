@@ -1,102 +1,137 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import ImageDisplayPage from '../CameraPage2';
 
 const CameraPage: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      alert("Permission to access the gallery is required!");
-      return;
+  const requestPermission = async (permissionType: 'camera' | 'mediaLibrary') => {
+    const { granted } = await (permissionType === 'camera' 
+      ? ImagePicker.requestCameraPermissionsAsync()
+      : ImagePicker.requestMediaLibraryPermissionsAsync());
+    
+    if (!granted) {
+      alert(`Permission to access the ${permissionType} is required!`);
+      return false;
     }
-    let pickerResult = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    return true;
+  };
 
-    if (!pickerResult.canceled) {
-      setSelectedImage(pickerResult.assets[0].uri);
+  const launchPicker = async (pickerType: 'camera' | 'library') => {
+    const permissionGranted = await requestPermission(pickerType === 'camera' ? 'camera' : 'mediaLibrary');
+    if (!permissionGranted) return;
+
+    const result = await (pickerType === 'camera' 
+      ? ImagePicker.launchCameraAsync(pickerOptions)
+      : ImagePicker.launchImageLibraryAsync(pickerOptions));
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
     }
   };
 
-  const openCameraAsync = async () => {
-    let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permissionResult.granted) {
-      alert("Permission to access the camera is required!");
-      return;
-    }
-    let cameraResult = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!cameraResult.canceled) {
-      setSelectedImage(cameraResult.assets[0].uri);
-    }
+  const pickerOptions: ImagePicker.ImagePickerOptions = {
+    allowsEditing: true,
+    aspect: [4, 3],
+    quality: 1,
   };
 
   return (
-    <View style={styles.container}>
-      {selectedImage ? (
-        <ImageDisplayPage
-          selectedImage={selectedImage}
-          onClose={() => setSelectedImage(null)}
-        />
-      ) : (
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={openImagePickerAsync}>
-            <Image source={require('../assets/UploadPic.png')} style={styles.iconImage} />
-            <Text style={styles.buttonText}>Pick a photo</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={openCameraAsync}>
-            <Image source={require('../assets/TakePhoto - Copy.png')} style={styles.iconImage} />
-            <Text style={styles.buttonText}>Take a photo</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#8B0000" />
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Yolov9 Camera</Text>
+      </View>
+      <View style={styles.content}>
+        {selectedImage ? (
+          <ImageDisplayPage
+            selectedImage={selectedImage}
+            onClose={() => setSelectedImage(null)}
+          />
+        ) : (
+          <View style={styles.buttonContainer}>
+            <PickerButton
+              onPress={() => launchPicker('camera')}
+              iconSource={require('../assets/TakePhoto - Copy.png')}
+              text="Take a photo"
+            />
+            <PickerButton
+              onPress={() => launchPicker('library')}
+              iconSource={require('../assets/UploadPic.png')}
+              text="Pick a photo"
+            />
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
+
+interface PickerButtonProps {
+  onPress: () => void;
+  iconSource: any;
+  text: string;
+}
+
+const PickerButton: React.FC<PickerButtonProps> = ({ onPress, iconSource, text }) => (
+  <TouchableOpacity style={styles.button} onPress={onPress}>
+    <Image source={iconSource} style={styles.iconImage} />
+    <Text style={styles.buttonText}>{text}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#8B0000',
+  },
+  header: {
+    backgroundColor: '#8B0000',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    paddingBottom: 15,
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#600000',
+  },
+  headerText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  content: {
+    flex: 1,
+    backgroundColor: 'white',
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   button: {
-    backgroundColor: '#ffffff',
+    flexDirection: 'row',
+    backgroundColor: 'white',
     padding: 15,
-    borderRadius: 15,
-    marginHorizontal: 10,
-    width: 150,
-    height: 150,
-    justifyContent: 'center',
+    borderRadius: 8,
+    marginBottom: 12,
     alignItems: 'center',
-    shadowColor: '#000000',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 5,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5, // Enhanced shadow for more depth
   },
   buttonText: {
     color: 'black',
-    fontSize: 16,
-    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '600',
+    marginLeft: 15,
   },
   iconImage: {
-    width: 50,
-    height: 50,
-    marginBottom: 5,
+    width: 30,
+    height: 30,
+    tintColor: '#800000',
   },
 });
 

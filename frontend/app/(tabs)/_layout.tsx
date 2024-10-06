@@ -1,174 +1,124 @@
-import { Tabs } from "expo-router";
-import { Image, View } from 'react-native';
 import React from 'react';
+import { Tabs } from "expo-router";
+import { Image, View, ImageSourcePropType } from 'react-native';
 
-export default () => {
+interface TabIconProps {
+  source: ImageSourcePropType;
+  focused: boolean;
+}
+
+const TabIcon: React.FC<TabIconProps> = ({ source, focused }) => (
+  <View style={{
+    backgroundColor: focused ? 'rgba(128, 128, 128, 0.2)' : 'transparent',
+    borderRadius: 12,
+    padding: 8,
+  }}>
+    <Image
+      source={source}
+      style={{
+        width: 24,
+        height: 24,
+        opacity: focused ? 1 : 0.7,
+      }}
+    />
+  </View>
+);
+
+interface CameraButtonProps {
+  focused: boolean;
+}
+
+const CameraButton: React.FC<CameraButtonProps> = ({ focused }) => (
+  <View style={{ alignItems: 'center' }}>
+    <View style={{
+      position: 'absolute',
+      width: 80,
+      height: 80,
+      backgroundColor: '#f0f0f0',
+      borderRadius: 40,
+      bottom: 30,
+      zIndex: -1,
+    }} />
+    <View style={{
+      width: 64,
+      height: 64,
+      backgroundColor: '#fff',
+      borderRadius: 32,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 40,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 5,
+    }}>
+      <TabIcon source={require('../assets/Camera.png')} focused={focused} />
+    </View>
+  </View>
+);
+
+export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarShowLabel: false, // Hide the labels to show icons only
-        tabBarStyle: {  
-          height: 60, // Adjust tab bar height if needed
-          backgroundColor: '#fff', // White background for the tab bar
-          borderTopWidth: 0, // Remove the top border
-          position: 'absolute', // Make it floating
-          borderRadius: 15, // Rounded corners
-          marginHorizontal: 10, // Add some horizontal margin to separate from screen edges
-          marginBottom: 10, // Adjust bottom margin if needed
-          elevation: 5, // Add shadow for Android
-          shadowColor: '#000', // Shadow color for iOS
-          shadowOffset: { width: 0, height: 2 }, // Shadow positioning
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          height: 60,
+          backgroundColor: '#fff',
+          borderTopWidth: 0,
+          position: 'absolute',
+          borderRadius: 20,
+          marginHorizontal: 16,
+          marginBottom: 16,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.1,
-          shadowRadius: 2,
+          shadowRadius: 8,
+          elevation: 8,
         },
       }}
     >
-      {/* Home Screen */}
       <Tabs.Screen
         name="Home"
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <View style={{
-                backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
-                borderRadius: 12,
-                paddingHorizontal: 15,
-                paddingVertical: 8,
-              }}>
-            <Image
-              source={require('../assets/Data-analysis.png')}
-              style={{
-                width: 35,
-                height: 30,
-              }}
-            />
-            </View>
+            <TabIcon source={require('../assets/Data-analysis.png')} focused={focused} />
           ),
         }}
       />
-
-      {/* Gallery Screen */}
       <Tabs.Screen
         name="Gallery"
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <View style={{
-                backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
-                borderRadius: 12,
-                paddingHorizontal: 15,
-                paddingVertical: 8,
-              }}>
-            <Image
-              source={require('../assets/Galery.png')}
-              style={{
-                width: 35,
-                height: 30,
-              }}
-            />
-            </View>
+            <TabIcon source={require('../assets/Galery.png')} focused={focused} />
           ),
         }}
       />
-
-      {/* Camera Screen - Center Button */}
       <Tabs.Screen
         name="CameraPage"
         options={{
           headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <View style={{ alignItems: 'center' }}>
-              {/* Circle Background */}
-              <View style={{
-                position: 'absolute',
-                width: 92, // Width of the circle
-                height: 92, // Height of the circle
-                backgroundColor: '#f3f3f3', // Circle color
-                borderRadius: 45, // Make it circular
-                justifyContent: 'center',
-                alignItems: 'center',
-                bottom: 50, // Position above the tab bar
-                zIndex: -1, // Send it to the back
-              }} />
-              
-              {/* Camera Button */}
-              <View style={{
-                width: 72,
-                height: 72,
-                backgroundColor: '#fff',
-                borderRadius: 35,
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginBottom: 60,
-                shadowColor: '#000000',
-                shadowOffset: { width: 0, height: 5 },
-                shadowOpacity: 1,
-                shadowRadius: 5,
-                elevation: 5,
-              }}>
-                <View style={{
-                  backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
-                  borderRadius: 70,
-                  padding: 9,
-                }}>
-                  <Image
-                    source={require('../assets/Camera.png')}
-                    style={{
-                      width: 35,
-                      height: 35,
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-          ),
+          tabBarIcon: ({ focused }) => <CameraButton focused={focused} />,
         }}
       />
-
-      {/* Handgun Screen */}
       <Tabs.Screen
         name="HandGun"
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <View style={{
-                backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
-                borderRadius: 12,
-                paddingHorizontal: 15,
-                paddingVertical: 8,
-              }}>
-            <Image
-              source={require('../assets/Handgun.png')}
-              style={{
-                width: 35,
-                height: 30,
-              }}
-            />
-            </View>
+            <TabIcon source={require('../assets/Handgun.png')} focused={focused} />
           ),
         }}
       />
-
-      {/* Profile Screen */}
       <Tabs.Screen
         name="Profile"
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <View style={{
-                backgroundColor: focused ? 'rgba(128, 128, 128, 0.3)' : 'transparent',
-                borderRadius: 12,
-                paddingHorizontal: 15,
-                paddingVertical: 8,
-              }}>
-            <Image
-              source={require('../assets/Profile.png')}
-              style={{
-                width: 35,
-                height: 30,
-              }}
-            />
-            </View>
+            <TabIcon source={require('../assets/Profile.png')} focused={focused} />
           ),
         }}
       />

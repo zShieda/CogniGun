@@ -43,18 +43,12 @@ const ImageDisplayPage: React.FC<ImageDisplayPageProps> = ({ selectedImage, onCl
 
   return (
     <View style={styles.container}>
+      {/* Image Preview Section */}
       <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
-      <TouchableOpacity style={styles.buttonResult} onPress={uploadImage}>
-        {loading ? (
-          <ActivityIndicator size="small" color="#ffffff" />
-        ) : (
-          <Text style={styles.buttonTextUpload}>Upload and Detect Objects</Text>
-        )}
-      </TouchableOpacity>
 
+      {/* Detection Results: placed between the image and buttons */}
       {detections.length > 0 && (
         <View style={styles.detectionContainer}>
-          <Text style={styles.detectionTitle}>Detections:</Text>
           {detections.map((detection, index) => (
             <Text key={index} style={styles.detectionText}>
               Object {index + 1}: {detection.class} - {Math.round(detection.confidence * 100)}% confidence
@@ -63,9 +57,20 @@ const ImageDisplayPage: React.FC<ImageDisplayPageProps> = ({ selectedImage, onCl
         </View>
       )}
 
-      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-        <Text style={styles.closeButtonText}>Back</Text>
-      </TouchableOpacity>
+      {/* Buttons: Upload and Back aligned on the right */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.buttonResult} onPress={uploadImage}>
+          {loading ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <Text style={styles.buttonTextUpload}>Upload</Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Text style={styles.closeButtonText}>Back</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -73,49 +78,55 @@ const ImageDisplayPage: React.FC<ImageDisplayPageProps> = ({ selectedImage, onCl
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
+    paddingTop: 20,
   },
   imagePreview: {
     width: 340,
     height: 250,
-    marginVertical: 15,
-    borderRadius: 15,
+    borderRadius: 10,
+  },
+  detectionContainer: {
+    marginTop: 15,
+    marginBottom: 15, // Creates space between detection text and buttons
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  detectionText: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end', // Align buttons to the right
+    alignItems: 'center',
+    marginTop: 20,
+    width: '90%', // Use most of the screen width
   },
   buttonResult: {
     backgroundColor: '#732626',
     paddingVertical: 15,
     paddingHorizontal: 25,
-    borderRadius: 20,
-    marginTop: 15,
+    borderRadius: 10,
   },
   buttonTextUpload: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 10,
     textAlign: 'center',
-  },
-  detectionContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  detectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  detectionText: {
-    fontSize: 16,
   },
   closeButton: {
     backgroundColor: '#333',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
     borderRadius: 10,
-    marginTop: 20,
+    marginLeft: 10, // Adds space between the buttons
   },
   closeButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 10,
+    textAlign: 'center',
   },
 });
 

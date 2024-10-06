@@ -1,6 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, RefreshControl, StatusBar, SafeAreaView, Platform } from 'react-native';
+import { 
+  View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, 
+  RefreshControl, StatusBar, SafeAreaView, Platform, Dimensions 
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+const screenWidth = Dimensions.get('window').width;
 
 interface GPSDataItem {
   latitude: number;
@@ -42,9 +47,12 @@ const HandGun: React.FC = () => {
 
   const renderItem = ({ item }: { item: GPSDataItem }) => (
     <View style={styles.item}>
-      <Text style={styles.itemText}>Latitude: {item.latitude.toFixed(6)}</Text>
-      <Text style={styles.itemText}>Longitude: {item.longitude.toFixed(6)}</Text>
-      <Text style={styles.itemText}>Timestamp: {new Date(item.timestamp).toLocaleString()}</Text>
+      <Text style={styles.label}>Latitude:</Text>
+      <Text style={styles.value}>{item.latitude.toFixed(6)}</Text>
+      <Text style={styles.label}>Longitude:</Text>
+      <Text style={styles.value}>{item.longitude.toFixed(6)}</Text>
+      <Text style={styles.label}>Timestamp:</Text>
+      <Text style={styles.value}>{new Date(item.timestamp).toLocaleString()}</Text>
     </View>
   );
 
@@ -101,31 +109,45 @@ const HandGun: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#8B0000',
+    backgroundColor: '#f5f5f5',
   },
   container: {
     flex: 1,
     backgroundColor: '#fff',
   },
   item: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderColor: '#e0e0e0',
+    padding: 12, // Reduced padding to make items closer
+    marginVertical: 8, // Less margin between items
+    marginHorizontal: 15, // Reduced horizontal margin
+    borderRadius: 8, // Rounded corners, slightly less rounded
     backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1, // Lighter shadow
+    shadowRadius: 3,
+    elevation: 2, // Slight elevation for a subtle card effect
   },
-  itemText: {
-    fontSize: 16,
-    marginBottom: 5,
+  label: {
+    fontSize: 14, // Slightly smaller font size
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 2, // Reduced space between label and value
+  },
+  value: {
+    fontSize: 14, // Slightly smaller font size
+    fontWeight: '300',
+    color: '#666',
+    marginBottom: 6,
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
   errorText: {
-    color: '#8B0000',
-    fontSize: 18,
+    color: '#B22222',
+    fontSize: 16, // Slightly smaller font
     marginBottom: 20,
     textAlign: 'center',
     paddingHorizontal: 20,
@@ -133,39 +155,38 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
     marginTop: 20,
-    fontSize: 18,
+    fontSize: 16, // Slightly smaller text for empty state
     color: '#666',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, 
+    padding: 12, // Reduced padding in header
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 12, 
     backgroundColor: '#8B0000',
   },
   headerText: {
-    fontSize: 22,
+    fontSize: 18, // Slightly smaller header text
     fontWeight: 'bold',
     color: '#ffffff',
   },
   reloadButton: {
-    padding: 10,
+    padding: 2, // Reduced padding for reload button
   },
   retryButton: {
     backgroundColor: '#8B0000',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingVertical: 10, // Slightly smaller retry button
+    paddingHorizontal: 18,
     borderRadius: 8,
   },
   retryButtonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 16, // Slightly smaller retry text
     fontWeight: 'bold',
   },
   listContentContainer: {
-    flexGrow: 1,
-    backgroundColor: '#ffffff',
+    paddingBottom: 15, // Reduced padding bottom for the list
   },
 });
 
