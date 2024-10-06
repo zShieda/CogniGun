@@ -18,6 +18,8 @@ from .models import Profile
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from .models import GPSData
+from .models import Profile
+from .serializers import ProfileSerializer
 
 
 # Load YOLOv9 model
@@ -208,3 +210,13 @@ def get_gps_data(request):
         print("Error:", str(e))  # Debug: print any errors
         return JsonResponse({"error": str(e)}, status=500)
     
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        profile = Profile.objects.get(user=request.user)
+        serializer = ProfileSerializer(profile)
+        data = serializer.data
+        data['username'] = request.user.username
+        data['email'] = request.user.email
+        return Response(data)
