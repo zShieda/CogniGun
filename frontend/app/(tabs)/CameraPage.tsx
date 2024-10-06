@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Platform, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios';
+import ImageDisplayPage from '../CameraPage2';
 
 const CameraPage: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [detections, setDetections] = useState<any[]>([]);
 
   const openImagePickerAsync = async () => {
     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
-      alert("Permission to access gallery is required!");
+      alert("Permission to access the gallery is required!");
       return;
     }
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
@@ -27,7 +26,7 @@ const CameraPage: React.FC = () => {
   const openCameraAsync = async () => {
     let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
-      alert("Permission to access camera is required!");
+      alert("Permission to access the camera is required!");
       return;
     }
     let cameraResult = await ImagePicker.launchCameraAsync({
@@ -41,70 +40,23 @@ const CameraPage: React.FC = () => {
     }
   };
 
-  const uploadImage = async () => {
-    if (!selectedImage) return;
-
-    const formData = new FormData();
-    try {
-      const filename = selectedImage.split('/').pop() || 'photo.jpg';
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : 'image';
-
-      formData.append('image', {
-        uri: Platform.OS === 'ios' ? selectedImage.replace('file://', '') : selectedImage,
-        name: filename,
-        type,
-      } as any);
-
-      console.log('Uploading image...');
-      const response = await axios.post('http://192.168.254.111:8000/api/detect/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        timeout: 10000, // Increased timeout to 10 seconds
-      });
-
-      console.log('Upload response:', response.data);
-      setDetections(response.data.detections);
-    } catch (error) {
-      console.error("Error uploading image: ", error);
-      if (axios.isAxiosError(error)) {
-        console.error("Axios error details:", error.response?.data);
-      }
-      alert("Error uploading image. Check console for details.");
-    }
-  };
-
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',}}>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={openImagePickerAsync}>
-          <Image source={require('../assets/UploadPic.png')} style={styles.iconImage} />
-          <Text style={styles.buttonText}>Pick a photo</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={openCameraAsync}>
-          <Image source={require('../assets/TakePhoto - Copy.png')} style={styles.iconImage} />
-          <Text style={styles.buttonText}>Take a photo</Text>
-        </TouchableOpacity>
-      </View>
-
-      {selectedImage && (
-        <View style={{ alignItems: 'center' }}>
-          <Image source={{ uri: selectedImage }} style={{ width: 340, height: 250, marginVertical: 15, borderRadius: 15, }} />
-          <TouchableOpacity style={styles.buttonResult} onPress={uploadImage}>
-            <Text style={styles.buttonTextUpload}>Upload and Detect Objects</Text>
+    <View style={styles.container}>
+      {selectedImage ? (
+        <ImageDisplayPage
+          selectedImage={selectedImage}
+          onClose={() => setSelectedImage(null)}
+        />
+      ) : (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={openImagePickerAsync}>
+            <Image source={require('../assets/UploadPic.png')} style={styles.iconImage} />
+            <Text style={styles.buttonText}>Pick a photo</Text>
           </TouchableOpacity>
-        </View>
-      )}
-
-      {detections.length > 0 && (
-        <View style={{ marginTop: 10 }}>
-          <Text>Detections:</Text>
-          {detections.map((detection, index) => (
-            <Text key={index}>
-              Object {index + 1}: {detection.class} - {Math.round(detection.confidence * 100)}% confidence
-            </Text>
-          ))}
+          <TouchableOpacity style={styles.button} onPress={openCameraAsync}>
+            <Image source={require('../assets/TakePhoto - Copy.png')} style={styles.iconImage} />
+            <Text style={styles.buttonText}>Take a photo</Text>
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -112,46 +64,39 @@ const CameraPage: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
   },
   button: {
     backgroundColor: '#ffffff',
-    padding: 10,
+    padding: 15,
     borderRadius: 15,
     marginHorizontal: 10,
-    width: 145,
-    height: 145,
+    width: 150,
+    height: 150,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#732626',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 5,
+    shadowOpacity: 0.3,
     shadowRadius: 2,
-    elevation: 50,
-  },
-  buttonResult: {
-    backgroundColor: '#732626',
-    paddingVertical: 15,   // Smaller padding for a smaller button
-    paddingHorizontal: 15, // Adjust the horizontal padding as needed
-    borderRadius: 20,
+    elevation: 5,
   },
   buttonText: {
     color: 'black',
     fontSize: 16,
-    textAlign: 'center'
-  },
-  buttonTextUpload: {
-    color: 'white',
-    fontSize: 16,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   iconImage: {
     width: 50,
     height: 50,
-    marginBottom: 5, // Adjust this to space the image and text
+    marginBottom: 5,
   },
 });
 

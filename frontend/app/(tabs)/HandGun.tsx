@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, RefreshControl, StatusBar } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, RefreshControl, StatusBar, SafeAreaView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 interface GPSDataItem {
@@ -52,33 +52,37 @@ const HandGun: React.FC = () => {
     <View style={styles.header}>
       <Text style={styles.headerText}>Gun Location Data</Text>
       <TouchableOpacity onPress={onRefresh} style={styles.reloadButton}>
-        <Ionicons name="reload" size={24} color="#007AFF" />
+        <Ionicons name="reload" size={24} color="#ffffff" />
       </TouchableOpacity>
     </View>
   );
 
   if (isLoading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#8B0000" />
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centerContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity onPress={fetchGPSData} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>Retry</Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity onPress={fetchGPSData} style={styles.retryButton}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor="#f0f0f0" barStyle="dark-content" />
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar backgroundColor="#8B0000" barStyle="light-content" />
       <FlatList
         data={gpsData}
         renderItem={renderItem}
@@ -86,14 +90,19 @@ const HandGun: React.FC = () => {
         ListHeaderComponent={ListHeader}
         ListEmptyComponent={<Text style={styles.emptyText}>No GPS data available</Text>}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} colors={['#007AFF']} />
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} colors={['#8B0000']} />
         }
+        contentContainerStyle={styles.listContentContainer}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#8B0000',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -102,6 +111,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderColor: '#e0e0e0',
+    backgroundColor: '#ffffff',
   },
   itemText: {
     fontSize: 16,
@@ -114,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   errorText: {
-    color: 'red',
+    color: '#8B0000',
     fontSize: 18,
     marginBottom: 20,
     textAlign: 'center',
@@ -131,20 +141,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
-    backgroundColor: '#f0f0f0',
-    borderBottomWidth: 1,
-    borderColor: '#e0e0e0',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, 
+    backgroundColor: '#8B0000',
   },
   headerText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#ffffff',
   },
   reloadButton: {
     padding: 10,
   },
   retryButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#8B0000',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -153,6 +162,10 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  listContentContainer: {
+    flexGrow: 1,
+    backgroundColor: '#ffffff',
   },
 });
 
