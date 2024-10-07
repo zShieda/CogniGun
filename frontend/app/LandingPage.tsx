@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 
 const LandingPage = () => {
@@ -17,6 +17,16 @@ const LandingPage = () => {
     <View style={styles.container}>
       {/* Title */}
       <Text style={styles.title}>Let's Get Started!</Text>
+
+      {/* Image with spotlight effect */}
+      <View style={styles.imageWrapper}>
+        <View style={styles.spotlight} />
+        <Image
+          source={require('./assets/kidz.png')}
+          style={styles.image}
+          resizeMode="contain"
+        />
+      </View>
 
       {/* Sign Up Button */}
       <TouchableOpacity style={styles.button} onPress={navigateToRegister}>
@@ -45,7 +55,31 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: 'white',
+    marginBottom: 20,
+  },
+  imageWrapper: {
+    position: 'relative',
     marginBottom: 40,
+  },
+  spotlight: {
+    position: 'absolute',
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'white',
+    bottom: -95,
+    left: 50,
+    transform: [
+      { scaleX: 1 },
+      { scaleY: 0.3 },
+    ],
+    opacity: 1,
+    zIndex: 1,
+  },
+  image: {
+    width: 400,
+    height: 300,
+    zIndex: 2,
   },
   button: {
     backgroundColor: 'black', 

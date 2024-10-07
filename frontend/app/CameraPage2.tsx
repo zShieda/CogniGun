@@ -25,7 +25,7 @@ const ImageDisplayPage: React.FC<ImageDisplayPageProps> = ({ selectedImage, onCl
         type,
       } as any);
 
-      const response = await axios.post('http://192.168.254.111:8000/api/detect/', formData, {
+      const response = await axios.post('http:192.168.1.11:8000/api/detect/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

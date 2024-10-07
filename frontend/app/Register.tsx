@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, TextInput, Text, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { useRouter } from "expo-router";
@@ -111,20 +111,24 @@ const Register = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topSection}>
+        <Image
+          source={require('./assets/signup.png')} // Replace with your image path
+          style={styles.backgroundImage}
+          resizeMode="cover"
+        />
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <View style={styles.backButtonCircle}>
             <ArrowLeft color="white" size={20} />
           </View>
         </TouchableOpacity>
       </View>
-      
+
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
       >
         <View style={styles.whiteContainer}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <Text style={styles.title}>Register</Text>
             {renderInput("Username", username, setUsername, "username")}
             {renderInput("Password", password, setPassword, "password", true)}
             {renderInput("First name", firstname, setFirstname, "firstname")}
@@ -155,7 +159,7 @@ const Register = () => {
             {renderInput("ID Number", idNumber, setIdNumber, "idNumber")}
 
             <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-              <Text style={styles.registerButtonText}>Register</Text>
+              <Text style={styles.registerButtonText}>Sign up</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => router.push('/Login')}>
@@ -179,6 +183,15 @@ const styles = StyleSheet.create({
     height: '40%',
     justifyContent: 'flex-end',
     paddingBottom: 20,
+    overflow: 'hidden',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    width: '90%',
+    height: '95%',
+    opacity: 1,
+    marginLeft: 28,
+   
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -192,27 +205,6 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    marginTop: 20,
-    textAlign: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 40,
-    left: 20,
-    zIndex: 1,
-  },
-  backButtonCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   inputContainer: {
     width: '100%',
@@ -265,6 +257,20 @@ const styles = StyleSheet.create({
   loginLink: {
     fontWeight: 'bold',
     color: '#800000',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 1,
+  },
+  backButtonCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, KeyboardAvoidingView, Platform, SafeAreaView, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, KeyboardAvoidingView, Platform, SafeAreaView, Alert, Image } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router"; 
@@ -12,7 +12,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.254.111:8000/api/login/', {
+      const response = await axios.post('http://192.168.1.11:8000/api/login/', {
         username,
         password
       });
@@ -50,6 +50,13 @@ const Login = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topSection}>
+        {/* Add your image here */}
+        <Image
+          source={require('./assets/login.png')}  
+          style={styles.logo}  
+          resizeMode="contain"
+        />
+
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <View style={styles.backButtonCircle}>
             <ArrowLeft color="white" size={20} />
@@ -65,7 +72,7 @@ const Login = () => {
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              placeholder="Email Address"
+              placeholder="Username"
               placeholderTextColor="#888"
               value={username}
               onChangeText={setUsername}
@@ -88,8 +95,6 @@ const Login = () => {
             <Text style={styles.loginButtonText}>Login</Text>
           </TouchableOpacity>
           
-         
-          
           <TouchableOpacity onPress={() => router.push('/Register')}>
             <Text style={styles.signUpText}>
               Don't have an account? <Text style={styles.signUpLink}>Sign Up</Text>
@@ -104,12 +109,18 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#800000',
+    backgroundColor: '#800000',  // Maroon background
   },
   topSection: {
-    height: '40%', 
-    justifyContent: 'flex-end',
+    height: '40%',
+    justifyContent: 'center',
+    alignItems: 'center',  // Center the image horizontally
     paddingBottom: 20,
+  },
+  logo: {
+    width: '100%',  // Adjust the width to fit your image
+    height: '100%',  // Adjust the height to fit your image
+    marginBottom: -50,  // Add some margin below the image if necessary
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -122,12 +133,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    marginTop: 20,
-  },
   backButton: {
     position: 'absolute',
     top: 40,
@@ -138,7 +143,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'transparent',
+    backgroundColor: 'black',  // Black background for the button
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -169,11 +174,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  orText: {
-    color: '#888',
-    fontSize: 16,
-    marginVertical: 20,
   },
   signUpText: {
     color: 'black',

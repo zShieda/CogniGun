@@ -29,7 +29,7 @@ const Gallery: React.FC = () => {
   const fetchImages = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://192.168.254.111:8000/api/images/');
+      const response = await fetch('http://192.168.1.11:8000/api/images/');
       const data = await response.json();
       setOriginalImages(data.original_images); // Assuming this is an array of strings (URLs)
       setDetectedImages(data.detected_images); // Assuming this is also an array of strings (URLs)
