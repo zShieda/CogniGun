@@ -12,7 +12,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.1.11:8000/api/login/', {
+      const response = await axios.post('http://192.168.100.43:8000/api/login/', {
         username,
         password
       });
@@ -27,7 +27,7 @@ const Login = () => {
       console.log('User role:', user_role);
 
       if (user_role === 'admin') {
-        router.push('/AdminPage');
+        router.push('./AdminPage');
       } else {
         router.push('/Home');
       }
