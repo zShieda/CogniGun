@@ -15,12 +15,19 @@ const LandingPage = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Our App</Text>
-      <TouchableOpacity style={styles.button} onPress={navigateToLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+      {/* Title */}
+      <Text style={styles.title}>Let's Get Started!</Text>
+
+      {/* Sign Up Button */}
       <TouchableOpacity style={styles.button} onPress={navigateToRegister}>
-        <Text style={styles.buttonText}>Register</Text>
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </TouchableOpacity>
+
+      {/* Log In Link */}
+      <TouchableOpacity onPress={navigateToLogin}>
+        <Text style={styles.loginText}>
+          Already have an account? <Text style={styles.loginLink}>Log In</Text>
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -31,24 +38,34 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#800000', 
     padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 30,
+    color: 'white',
+    marginBottom: 40,
   },
   button: {
-    backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 5,
-    width: '100%',
+    backgroundColor: 'black', 
+    paddingVertical: 15,
+    paddingHorizontal: 50,
+    borderRadius: 30,
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 20,
   },
   buttonText: {
-    color: 'white',
+    color: 'white', 
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  loginText: {
+    color: 'white', 
     fontSize: 16,
+  },
+  loginLink: {
+    color: 'black', 
     fontWeight: 'bold',
   },
 });

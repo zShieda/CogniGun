@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, KeyboardAvoidingView, Platform, SafeAreaView, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router"; 
+import { ArrowLeft } from 'lucide-react-native';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -42,76 +43,145 @@ const Login = () => {
     }
   };
 
+  const handleBack = () => {
+    router.push('/');
+  };
+
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
-      <View style={styles.innerContainer}>
-        <Text style={styles.title}>Login</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          placeholderTextColor="#888"
-          value={username}
-          onChangeText={setUsername}
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#888"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.topSection}>
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <View style={styles.backButtonCircle}>
+            <ArrowLeft color="white" size={20} />
+          </View>
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+      
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingView}
+      >
+        <View style={styles.whiteContainer}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Email Address"
+              placeholderTextColor="#888"
+              value={username}
+              onChangeText={setUsername}
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#888"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+            <TouchableOpacity onPress={() => Alert.alert('Forgot Password')}>
+              <Text style={styles.forgotPassword}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonText}>Login</Text>
+          </TouchableOpacity>
+          
+         
+          
+          <TouchableOpacity onPress={() => router.push('/Register')}>
+            <Text style={styles.signUpText}>
+              Don't have an account? <Text style={styles.signUpLink}>Sign Up</Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#800000',
   },
-  innerContainer: {
+  topSection: {
+    height: '40%', 
+    justifyContent: 'flex-end',
+    paddingBottom: 20,
+  },
+  keyboardAvoidingView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  whiteContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     padding: 20,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 24,
-    color: '#333',
+    marginBottom: 20,
+    marginTop: 20,
   },
-  input: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    marginBottom: 12,
-    paddingHorizontal: 16,
-    fontSize: 16,
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 1,
   },
-  button: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#007AFF',
-    borderRadius: 5,
+  backButtonCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 12,
   },
-  buttonText: {
-    color: '#fff',
+  inputContainer: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: '#F0F0F0',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    fontSize: 16,
+  },
+  forgotPassword: {
+    color: '#888',
+    textAlign: 'right',
+    marginTop: 5,
+  },
+  loginButton: {
+    backgroundColor: 'black',
+    borderRadius: 10,
+    padding: 15,
+    width: '100%',
+    alignItems: 'center',
+  },
+  loginButtonText: {
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  orText: {
+    color: '#888',
+    fontSize: 16,
+    marginVertical: 20,
+  },
+  signUpText: {
+    color: 'black',
+    fontSize: 14,
+  },
+  signUpLink: {
+    fontWeight: 'bold',
+    color: '#800000', 
   },
 });
 

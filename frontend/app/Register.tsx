@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform, TouchableOpacity, SafeAreaView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from 'moment'; 
+import moment from 'moment';
+import { useRouter } from "expo-router";
+import { ArrowLeft } from 'lucide-react-native';
 
 const Register = () => {
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [middlename, setMiddlename] = useState('');
-  const [birthday, setBirthday] = useState<Date | null>(null); 
-  const [age, setAge] = useState('');  
+  const [birthday, setBirthday] = useState<Date | null>(null);
+  const [age, setAge] = useState('');
   const [address, setAddress] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [email, setEmail] = useState('');
@@ -54,7 +57,7 @@ const Register = () => {
           firstname,
           lastname,
           middlename,
-          birthday: moment(birthday).format('YYYY-MM-DD'),  
+          birthday: moment(birthday).format('YYYY-MM-DD'),
           age,
           address,
           contact_number: contactNumber,
@@ -85,7 +88,7 @@ const Register = () => {
   };
 
   const renderInput = (placeholder: string, value: string, onChangeText: (text: string) => void, key: string, secureTextEntry: boolean = false) => (
-    <View>
+    <View style={styles.inputContainer}>
       <TextInput 
         placeholder={placeholder} 
         value={value} 
@@ -95,111 +98,173 @@ const Register = () => {
         }}
         style={[styles.input, errors[key] ? styles.inputError : null]}
         secureTextEntry={secureTextEntry}
+        placeholderTextColor="#888"
       />
       {errors[key] ? <Text style={styles.errorText}>{errors[key]}</Text> : null}
     </View>
   );
 
+  const handleBack = () => {
+    router.push('/');
+  };
+
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.header}>Register</Text>
-        {renderInput("Username", username, setUsername, "username")}
-        {renderInput("Password", password, setPassword, "password", true)}
-        {renderInput("First name", firstname, setFirstname, "firstname")}
-        {renderInput("Last name", lastname, setLastname, "lastname")}
-        {renderInput("Middle name", middlename, setMiddlename, "middlename")}
-
-        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.datePicker, errors.birthday ? styles.inputError : null]}>
-          <Text style={styles.datePickerText}>
-            {birthday ? moment(birthday).format('YYYY-MM-DD') : 'Select Birthday'}
-          </Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.topSection}>
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <View style={styles.backButtonCircle}>
+            <ArrowLeft color="white" size={20} />
+          </View>
         </TouchableOpacity>
-        {errors.birthday ? <Text style={styles.errorText}>{errors.birthday}</Text> : null}
-        
-        {showDatePicker && (
-          <DateTimePicker
-            value={birthday || new Date()}
-            mode="date"
-            display="default"
-            maximumDate={new Date()}
-            onChange={onBirthdayChange}
-          />
-        )}
+      </View>
+      
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingView}
+      >
+        <View style={styles.whiteContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <Text style={styles.title}>Register</Text>
+            {renderInput("Username", username, setUsername, "username")}
+            {renderInput("Password", password, setPassword, "password", true)}
+            {renderInput("First name", firstname, setFirstname, "firstname")}
+            {renderInput("Last name", lastname, setLastname, "lastname")}
+            {renderInput("Middle name", middlename, setMiddlename, "middlename")}
 
-        {renderInput("Age", age, setAge, "age")}
-        {renderInput("Address", address, setAddress, "address")}
-        {renderInput("Contact Number", contactNumber, setContactNumber, "contactNumber")}
-        {renderInput("Email", email, setEmail, "email")}
-        {renderInput("ID Number", idNumber, setIdNumber, "idNumber")}
+            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.datePicker, errors.birthday ? styles.inputError : null]}>
+              <Text style={styles.datePickerText}>
+                {birthday ? moment(birthday).format('YYYY-MM-DD') : 'Select Birthday'}
+              </Text>
+            </TouchableOpacity>
+            {errors.birthday ? <Text style={styles.errorText}>{errors.birthday}</Text> : null}
+            
+            {showDatePicker && (
+              <DateTimePicker
+                value={birthday || new Date()}
+                mode="date"
+                display="default"
+                maximumDate={new Date()}
+                onChange={onBirthdayChange}
+              />
+            )}
 
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Register</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            {renderInput("Age", age, setAge, "age")}
+            {renderInput("Address", address, setAddress, "address")}
+            {renderInput("Contact Number", contactNumber, setContactNumber, "contactNumber")}
+            {renderInput("Email", email, setEmail, "email")}
+            {renderInput("ID Number", idNumber, setIdNumber, "idNumber")}
+
+            <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+              <Text style={styles.registerButtonText}>Register</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.push('/Login')}>
+              <Text style={styles.loginText}>
+                Already have an account? <Text style={styles.loginLink}>Login</Text>
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#800000',
+  },
+  topSection: {
+    height: '40%',
+    justifyContent: 'flex-end',
+    paddingBottom: 20,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  whiteContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 20,
   },
   scrollContainer: {
-    padding: 20,
     flexGrow: 1,
-    justifyContent: 'center',
   },
-  header: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
     marginBottom: 20,
-    color: '#007BFF',
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 1,
+  },
+  backButtonCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 15,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
+    backgroundColor: '#F0F0F0',
+    borderRadius: 10,
     padding: 15,
-    marginVertical: 10,
-    borderRadius: 5,
-    backgroundColor: '#fff',
     fontSize: 16,
   },
   inputError: {
     borderColor: 'red',
+    borderWidth: 1,
   },
   errorText: {
     color: 'red',
     fontSize: 12,
-    marginTop: -5,
-    marginBottom: 5,
+    marginTop: 5,
   },
   datePicker: {
-    borderWidth: 1,
-    borderColor: '#ddd',
+    backgroundColor: '#F0F0F0',
+    borderRadius: 10,
     padding: 15,
-    marginVertical: 10,
-    borderRadius: 5,
-    backgroundColor: '#fff',
+    marginBottom: 15,
   },
   datePickerText: {
-    textAlign: 'center',
-    color: '#000',
     fontSize: 16,
+    color: '#888',
   },
-  button: {
-    backgroundColor: '#007BFF',
+  registerButton: {
+    backgroundColor: 'black',
+    borderRadius: 10,
     padding: 15,
-    borderRadius: 5,
+    width: '100%',
+    alignItems: 'center',
     marginTop: 20,
   },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
+  registerButtonText: {
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  loginText: {
+    color: 'black',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  loginLink: {
+    fontWeight: 'bold',
+    color: '#800000',
   },
 });
 
