@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, ActivityIndicator, ScrollView, StatusBar, Refre
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import Constants from 'expo-constants';
 
 interface UserProfile {
   id: number;
@@ -25,6 +27,9 @@ const ProfileComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation();
+
+  const API_URL = Constants.manifest?.extra?.apiUrl || 'http://your-api-url.com';
 
   const fetchProfile = async () => {
     try {
@@ -33,7 +38,7 @@ const ProfileComponent = () => {
         throw new Error('No token found');
       }
 
-      const response = await axios.get('http://192.168.100.43:8000/api/profile/', {
+      const response = await axios.get(`${API_URL}/api/profile/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -64,6 +69,16 @@ const ProfileComponent = () => {
     return value;
   };
 
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('userToken');
+      // @ts-ignore: Argument of type '"LandingPage"' is not assignable to parameter of type...
+      navigation.navigate('LandingPage');
+    } catch (err) {
+      console.error('Error during logout:', err);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -77,6 +92,9 @@ const ProfileComponent = () => {
       <StatusBar backgroundColor="#8B0000" barStyle="light-content" />
       <View style={styles.header}>
         <Text style={styles.title}>Profile Information</Text>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
       </View>
       <ScrollView
         style={styles.scrollView}
@@ -137,12 +155,26 @@ const styles = StyleSheet.create({
     paddingTop: 35,
     paddingBottom: 16,
     paddingHorizontal: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     elevation: 4,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#ffffff',
+  },
+  logoutButton: {
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 5,
+    elevation: 2,
+  },
+  logoutButtonText: {
+    color: '#8B0000',
+    fontWeight: 'bold',
   },
   scrollView: {
     flex: 1,

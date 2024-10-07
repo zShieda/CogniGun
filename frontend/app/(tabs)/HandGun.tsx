@@ -22,7 +22,7 @@ const HandGun: React.FC = () => {
   const fetchGPSData = useCallback(async () => {
     try {
       setError(null);
-      const response = await fetch('http://192.168.100.43:8000/api/get-gps-data/');
+      const response = await fetch('http://192.168.254.111:8000/api/get-gps-data/');
       if (!response.ok) {
         throw new Error(`Failed to fetch GPS data: ${response.status} ${response.statusText}`);
       }
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12, // Reduced padding in header
+    padding: 11, // Reduced padding in header
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 12, 
     backgroundColor: '#8B0000',
   },
