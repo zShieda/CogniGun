@@ -20,7 +20,7 @@ const HomeScreen: React.FC = () => {
   const fetchGPSData = useCallback(async () => {
     try {
       setError(null);
-      const response = await axios.get('http://192.168.254.111:8000/api/get-gps-data/');
+      const response = await axios.get('http://192.168.100.113:8000/api/get-gps-data/');
       setGpsData(response.data.gps_data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
