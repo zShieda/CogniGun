@@ -33,7 +33,7 @@ const ProfileComponent = () => {
         throw new Error('No token found');
       }
 
-      const response = await axios.get('http:192.168.100.113:8000/api/profile/', {
+      const response = await axios.get('http:192.168.1.6:8000/api/profile/', {
         headers: { Authorization: `Bearer ${token}` }
       });
 

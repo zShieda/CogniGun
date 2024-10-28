@@ -20,6 +20,7 @@ from rest_framework.views import APIView
 from .models import GPSData
 from .models import Profile
 from .serializers import ProfileSerializer
+from django.http import JsonResponse
 
 
 # Load YOLOv9 model
@@ -220,3 +221,8 @@ class UserProfileView(APIView):
         data['username'] = request.user.username
         data['email'] = request.user.email
         return Response(data)
+    
+
+def solenoid_command(request):
+    command = "lock"  # Or "unlock" depending on your logic
+    return JsonResponse(command, safe=False)

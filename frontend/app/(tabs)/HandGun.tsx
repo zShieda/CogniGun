@@ -22,7 +22,7 @@ const HandGun: React.FC = () => {
   const fetchGPSData = useCallback(async () => {
     try {
       setError(null);
-      const response = await fetch('http://192.168.100.113:8000/api/get-gps-data/');
+      const response = await fetch('http://192.168.1.6:8000/api/get-gps-data/');
       if (!response.ok) {
         throw new Error(`Failed to fetch GPS data: ${response.status} ${response.statusText}`);
       }

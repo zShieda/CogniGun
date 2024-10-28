@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, StatusBar, Dimensions, ActivityIndicator, SafeAreaView } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import axios from 'axios';
-import { format } from 'date-fns'; // Importing date-fns for date formatting
+import { format } from 'date-fns';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -20,7 +20,7 @@ const HomeScreen: React.FC = () => {
   const fetchGPSData = useCallback(async () => {
     try {
       setError(null);
-      const response = await axios.get('http://192.168.100.113:8000/api/get-gps-data/');
+      const response = await axios.get('http://192.168.1.6:8000/api/get-gps-data/');
       setGpsData(response.data.gps_data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -64,10 +64,10 @@ const HomeScreen: React.FC = () => {
 
   // Prepare chart data (reverse the order of dates)
   const chartData = {
-    labels: Object.keys(gunshotCountsByDate).reverse(), // Reverse the dates so latest is on the left
+    labels: Object.keys(gunshotCountsByDate).reverse(),
     datasets: [
       {
-        data: Object.values(gunshotCountsByDate).reverse(), // Reverse the data points to match the labels
+        data: Object.values(gunshotCountsByDate).reverse(),
       },
     ],
   };
@@ -92,7 +92,7 @@ const HomeScreen: React.FC = () => {
           <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1 }}>
             <BarChart
               data={chartData}
-              width={Math.max(screenWidth, chartData.labels.length * 60)} // Adjust width dynamically for scrolling
+              width={Math.max(screenWidth, chartData.labels.length * 60)}
               height={220}
               yAxisLabel=""
               yAxisSuffix=" shots"

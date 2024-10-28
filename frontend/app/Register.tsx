@@ -48,7 +48,7 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch('http://192.168.100.113:8000/api/register/', {
+      const response = await fetch('http://192.168.1.6:8000/api/register/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
